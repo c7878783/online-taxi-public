@@ -51,7 +51,11 @@
             <artifactId>json</artifactId>
             <version>20240303</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>annotationProcessor</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -82,5 +86,8 @@
     </build>
     <modules>
         <module>api-passenger</module>
+        <module>service-verificationcode</module>
+        <module>internal-common</module>
+
     </modules>
 </project>
