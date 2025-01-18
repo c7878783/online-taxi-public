@@ -5,7 +5,10 @@ import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.responese.NumberCodeResponse;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class VerificationCodeService {
@@ -13,19 +16,22 @@ public class VerificationCodeService {
     @Autowired
     ServiceVerificationCodeClient serviceVerificationCodeClient;
 
-    public String generatorCode(String passengerPhone){
+    private String verificationCodePrefix = "passenger-verification-code-";
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    public ResponseResult generatorCode(String passengerPhone){
 
 
         ResponseResult<NumberCodeResponse> numberCodeResponse = serviceVerificationCodeClient.getNumberCode(5);
-        int NumberCode = numberCodeResponse.getData().getNumberCode();
+        int numberCode = numberCodeResponse.getData().getNumberCode();
 
-        System.out.println("获取验证码:" + NumberCode);
-//        System.out.println("获取验证码");
-//        System.out.println("存入redis");
+//      存入redis
+        String key = verificationCodePrefix + passengerPhone;
+        stringRedisTemplate.opsForValue().set(key, numberCode + "", 1, TimeUnit.MINUTES);
 
-        JSONObject result = new JSONObject();
-        result.put("code", 1);
-        result.put("message","成功");
-        return result.toString();
+
+        return ResponseResult.success();
     }
 }
