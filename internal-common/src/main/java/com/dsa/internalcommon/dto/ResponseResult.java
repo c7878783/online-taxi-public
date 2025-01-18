@@ -4,6 +4,12 @@ import com.dsa.internalcommon.constant.CommonStatusEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+/**
+ * DTO（Data Transfer Object） 是一种设计模式，
+ * 主要用于在不同的系统层之间传递数据。
+ * 它是一个 纯粹的数据容器，通常只包含一些字段（属性）和它们的 getter/setter 方法，而不包含任何业务逻辑。
+ * @param <T>
+ */
 @Data
 @Accessors(chain = true)
 public class ResponseResult <T>{

@@ -3,6 +3,7 @@ package com.dsa.apipassenger.service;
 import com.dsa.apipassenger.remote.ServiceVerificationCodeClient;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.responese.NumberCodeResponse;
+import com.dsa.internalcommon.responese.TokenResponse;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,7 +24,6 @@ public class VerificationCodeService {
 
     public ResponseResult generatorCode(String passengerPhone){
 
-
         ResponseResult<NumberCodeResponse> numberCodeResponse = serviceVerificationCodeClient.getNumberCode(5);
         int numberCode = numberCodeResponse.getData().getNumberCode();
 
@@ -31,7 +31,22 @@ public class VerificationCodeService {
         String key = verificationCodePrefix + passengerPhone;
         stringRedisTemplate.opsForValue().set(key, numberCode + "", 1, TimeUnit.MINUTES);
 
-
         return ResponseResult.success();
     }
+
+    public ResponseResult checkCode(String passengerPhone, String verificationCode){
+        System.out.println("去redis读对应手机号的验证码");
+
+        System.out.println("比对");
+
+        System.out.println("判断是否已存在用户");
+
+        System.out.println("发令牌");
+
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken("token");
+
+        return ResponseResult.success(tokenResponse);
+    }
+
 }
