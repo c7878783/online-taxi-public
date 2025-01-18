@@ -1,4 +1,4 @@
-package com.dsa.apipassenger.request;
+package com.dsa.internalcommon.request;
 
 import lombok.Data;
 

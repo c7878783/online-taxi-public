@@ -53,7 +53,7 @@ public class VerificationCodeService {
         System.out.println("发令牌");
 
         TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken("token");
+        tokenResponse.setToken("toke n");
 
         return ResponseResult.success(tokenResponse);
     }

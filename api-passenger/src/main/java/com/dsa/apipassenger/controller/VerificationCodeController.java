@@ -1,8 +1,9 @@
 package com.dsa.apipassenger.controller;
 
-import com.dsa.apipassenger.request.VerificationCodeDTO;
+
 import com.dsa.apipassenger.service.VerificationCodeService;
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.request.VerificationCodeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
