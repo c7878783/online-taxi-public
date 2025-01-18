@@ -27,7 +27,7 @@ public class VerificationCodeController {
 
         String passengerPhone = verificationCodeDTO.getPassengerPhone();
         String verificationCode = verificationCodeDTO.getVerificationCode();
-
+        System.out.println(passengerPhone + ":" + verificationCode);
         return verificationCodeService.checkCode(passengerPhone, verificationCode);
     }
 
