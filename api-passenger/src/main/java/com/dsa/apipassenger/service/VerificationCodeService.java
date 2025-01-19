@@ -1,8 +1,10 @@
 package com.dsa.apipassenger.service;
 
+import com.dsa.apipassenger.remote.ServicePassengerUserClient;
 import com.dsa.apipassenger.remote.ServiceVerificationCodeClient;
 import com.dsa.internalcommon.constant.CommonStatusEnum;
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.request.VerificationCodeDTO;
 import com.dsa.internalcommon.responese.NumberCodeResponse;
 import com.dsa.internalcommon.responese.TokenResponse;
 import io.micrometer.common.util.StringUtils;
@@ -16,13 +18,17 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class VerificationCodeService {
 
-    @Autowired
-    ServiceVerificationCodeClient serviceVerificationCodeClient;
-
     private String verificationCodePrefix = "passenger-verification-code-";
 
     @Autowired
+    ServiceVerificationCodeClient serviceVerificationCodeClient;
+    @Autowired
+    private ServicePassengerUserClient servicePassengerUserClient;
+
+    @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+
 
     public ResponseResult generatorCode(String passengerPhone){
 
@@ -31,7 +37,7 @@ public class VerificationCodeService {
 
 //      存入redis
         String key = generatorKeyByPhone(passengerPhone);
-        stringRedisTemplate.opsForValue().set(key, numberCode + "", 1, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set(key, numberCode + "", 2, TimeUnit.MINUTES);
 
         return ResponseResult.success();
     }
@@ -40,8 +46,6 @@ public class VerificationCodeService {
         System.out.println("去redis读对应手机号的验证码");
         String key = generatorKeyByPhone(passengerPhone);
         String codeRedis = stringRedisTemplate.opsForValue().get(key);
-        System.out.println("redis中读出来的数字" + codeRedis);
-        System.out.println("比对");
         if (StringUtils.isBlank(codeRedis)){
             return ResponseResult.fail(CommonStatusEnum.VERIFY_CODE_ERROR.getCode(), CommonStatusEnum.VERIFY_CODE_ERROR.getValue());
         }
@@ -49,7 +53,8 @@ public class VerificationCodeService {
             return ResponseResult.fail(CommonStatusEnum.VERIFY_CODE_ERROR.getCode(), CommonStatusEnum.VERIFY_CODE_ERROR.getValue());
         }
         System.out.println("判断是否已存在用户");
-
+        VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO(passengerPhone, verificationCode);
+        ResponseResult responseResult = servicePassengerUserClient.loginOrRegister(verificationCodeDTO);
         System.out.println("发令牌");
 
         TokenResponse tokenResponse = new TokenResponse();
