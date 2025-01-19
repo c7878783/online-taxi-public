@@ -1,9 +1,9 @@
-package com.dsa.servicepassengeruser.dao;
+package com.dsa.servicepassengeruser.pojo;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 @Data
 public class PassengerUser {
 
@@ -12,7 +12,7 @@ public class PassengerUser {
     private LocalDateTime gmtModified;
     private String passengerPhone;
     private String passengerName;
-    private Integer passengerGender;
-    private Integer state;
+    private byte passengerGender;
+    private byte state;
 
 }

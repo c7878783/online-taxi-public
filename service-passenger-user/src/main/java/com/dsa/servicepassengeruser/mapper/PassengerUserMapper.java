@@ -2,7 +2,7 @@ package com.dsa.servicepassengeruser.mapper;
 import java.util.Map;
 
 //import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.dsa.servicepassengeruser.dao.PassengerUser;
+import com.dsa.servicepassengeruser.pojo.PassengerUser;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,4 +11,6 @@ import java.util.List;
 public interface PassengerUserMapper {
     List<PassengerUser> selectByMap(Map<String, Object> map);
 
+    int insert(PassengerUser passengerUser);
 }
+
