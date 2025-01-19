@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsa.servicepassengeruser.mapper.PassengerUserMapper">
+
+    <resultMap id="PassengerUserResultMap" type="com.dsa.servicepassengeruser.dao.PassengerUser">
+        <id property="id" column="id"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <result property="passengerPhone" column="passenger_phone"/>
+        <result property="passengerName" column="passenger_name"/>
+        <result property="passengerGender" column="passenger_gender"/>
+        <result property="state" column="state"/>
+    </resultMap>
+<!--上面这个resultmap要在下面显示的引用在result'map中-->
+    <select id="selectByMap" parameterType="java.util.Map" resultMap="PassengerUserResultMap">
+        SELECT * FROM passenger_user
+        <where>
+            <if test="passenger_phone != null">
+                AND passenger_phone = #{passenger_phone}
+            </if>
+        </where>
+    </select>
+
+</mapper>
