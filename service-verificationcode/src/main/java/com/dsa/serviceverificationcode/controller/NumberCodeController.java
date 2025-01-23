@@ -13,7 +13,7 @@ public class NumberCodeController {
     @GetMapping("/numberCode/{size}")
     public ResponseResult getNumberCode(@PathVariable("size") Integer size){
 
-        System.out.println(size);
+//        System.out.println(size);
 
         double randomNum = (Math.random() * 9 + 1) * Math.pow(10, size - 1);
         int resultInt = (int)randomNum;

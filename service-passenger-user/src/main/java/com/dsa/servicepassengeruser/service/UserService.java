@@ -22,9 +22,10 @@ public class UserService {
         Map<String, Object> map = new HashMap<>();
         map.put("passenger_phone", passengerPhone);
         List<PassengerUser> passengerUsers = passengerUserMapper.selectByMap(map);
-        System.out.println(passengerUsers);
+
 
         if (passengerUsers.size() == 0) {
+            System.out.println("未注册，已自动注册该用户");
             PassengerUser passengerUser = new PassengerUser();
             passengerUser.setPassengerName("用户" + passengerPhone);
             passengerUser.setPassengerGender((byte) 1);//这种应该设置constant
@@ -34,8 +35,8 @@ public class UserService {
             passengerUser.setGmtModified(LocalDateTime.now());
             passengerUserMapper.insert(passengerUser);
 //            return ResponseResult.success(passengerUser);
-
-
+        }else {
+            System.out.println(passengerUsers);
         }
         return ResponseResult.success();
     }
