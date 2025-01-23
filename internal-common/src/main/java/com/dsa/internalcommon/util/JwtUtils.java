@@ -23,9 +23,9 @@ public class JwtUtils {
         HashMap<String, String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE, passengerPhone);
         map.put(JWT_KEY_IDENTITY, identity);
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE,1);
-        Date date = calendar.getTime();
+//        Calendar calendar = Calendar.getInstance();//用于expire的calendar实例
+//        calendar.add(Calendar.DATE,1);//在api-passenger里已经实现了redis中的过期设置，所以不再需要
+//        Date date = calendar.getTime();
 
         JWTCreator.Builder builder = JWT.create();
 
@@ -35,7 +35,7 @@ public class JwtUtils {
             }
         );
 
-        builder.withExpiresAt(date);
+//        builder.withExpiresAt(date);
 
         String sign = builder.sign(Algorithm.HMAC256(SIGN));
 

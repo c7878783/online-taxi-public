@@ -10,7 +10,6 @@ import com.dsa.internalcommon.responese.NumberCodeResponse;
 import com.dsa.internalcommon.responese.TokenResponse;
 import com.dsa.internalcommon.util.JwtUtils;
 import io.micrometer.common.util.StringUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class VerificationCodeService {
 
     private String verificationCodePrefix = "passenger-verification-code-";
+    private String tokenPrefix = "token-";
 
     @Autowired
     ServiceVerificationCodeClient serviceVerificationCodeClient;
@@ -61,6 +61,10 @@ public class VerificationCodeService {
         ResponseResult responseResult = servicePassengerUserClient.loginOrRegister(verificationCodeDTO);
         System.out.println("发令牌");
         String token = JwtUtils.generatorToken(passengerPhone, IdentityContant.PASSENGER_IDENTITY);//这个1表示乘客，应该用常量
+        //存token到redis
+        String tokenKey = generateTokenKey(passengerPhone, IdentityContant.PASSENGER_IDENTITY);
+        stringRedisTemplate.opsForValue().set(tokenKey, token, 10, TimeUnit.DAYS);
+
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(token);
 
@@ -68,9 +72,17 @@ public class VerificationCodeService {
     }
 
     /**
-     * 当有复制代码的想法时，就应该考虑抽取方法
-     * @param passengerPhone
-     * @return
+     * @param passengerPhone 手机号码
+     * @param identity 身份(司机或乘客)
+     * @return 根据手机号码和身份生成的，用在redis中的token key
+     */
+    private String generateTokenKey(String passengerPhone, String identity){
+        return tokenPrefix + passengerPhone + identity;
+    }
+    /**
+     * 当有复制代码的想法时，就应该考虑抽取方法.根据手机号得到redis key
+     * @param passengerPhone 手机号码
+     * @return 根据手机号码生成的，用于在redis中存取验证码的key
      */
     private String generatorKeyByPhone(String passengerPhone){
         return verificationCodePrefix + passengerPhone;
