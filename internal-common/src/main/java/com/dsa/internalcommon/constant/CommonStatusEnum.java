@@ -16,7 +16,10 @@ public enum CommonStatusEnum {
      * 失败
      */
     FAIL(0, "失败"),
-
+    /**
+     * Token类提示：1100-1199
+     */
+    TOKEN_ERROR(1199,"token错误")
     ;
     @Getter
     private int code;

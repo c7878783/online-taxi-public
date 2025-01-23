@@ -3,6 +3,7 @@ package com.dsa.apipassenger.interceptor;
 import com.auth0.jwt.exceptions.AlgorithmMismatchException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.dsa.internalcommon.constant.TokenConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.dto.TokenResult;
 import com.dsa.internalcommon.util.JwtUtils;
@@ -36,22 +37,8 @@ public class JwtInterceptor implements HandlerInterceptor {
         String resultString = "";
 
         String token = request.getHeader("Authorization");//这就是token
-        TokenResult tokenResult = null;
-        try {
-            tokenResult = JwtUtils.paresToken(token);
-        }catch (SignatureVerificationException e){
-            resultString = "toekn sign error";
-            result = false;
-        }catch (TokenExpiredException e){
-            resultString = "token expired";
-            result = false;
-        }catch (AlgorithmMismatchException e){
-            resultString = "algorithm mismatch";
-            result = false;
-        }catch (Exception e){
-            resultString = "token invalid";
-            result = false;
-        }
+        TokenResult tokenResult = JwtUtils.checkToken(token);
+
         //从redis中取出token并比较
         if(tokenResult == null){
             resultString = "token invalid";
@@ -59,19 +46,13 @@ public class JwtInterceptor implements HandlerInterceptor {
         }else {
             String phone = tokenResult.getPhone();
             String identity = tokenResult.getIdentity();
-            String tokenKey = RedisPrefixUtils.generateTokenKey(phone, identity);
+            String tokenKey = RedisPrefixUtils.generateTokenKey(phone, identity, TokenConstants.ACCESS_TOKEN_TYPE);
             String tokenRedis = stringRedisTemplate.opsForValue().get(tokenKey);
-            if (StringUtils.isBlank(tokenRedis)){
+            if (StringUtils.isBlank(tokenRedis) || !token.trim().equals(tokenRedis.trim())){
                 resultString = "token invalid";
                 result = false;
-            }else {
-                if (!token.trim().equals(tokenRedis.trim())){
-                    resultString = "token invalid";
-                    result = false;
-                }
             }
         }
-
 
         if (!result){
             PrintWriter writer = response.getWriter();
