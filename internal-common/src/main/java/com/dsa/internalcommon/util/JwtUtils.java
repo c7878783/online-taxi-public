@@ -23,13 +23,16 @@ public class JwtUtils {
     private static final String JWT_KEY_PHONE = "passengerPhone";
     private static final String JWT_KEY_IDENTITY = "identity";
     private static final String JWT_TOKEN_TYPE = "tokenType";
+    private static final String JWT_TOKEN_TIME = "time";
 
     public static String generatorToken(String passengerPhone, String identity, String tokenType){
         HashMap<String, String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE, passengerPhone);
         map.put(JWT_KEY_IDENTITY, identity);
-        map.put(JWT_KEY_IDENTITY, tokenType);
-//        Calendar calendar = Calendar.getInstance();//用于expire的calendar实例
+        map.put(JWT_TOKEN_TYPE, tokenType);
+        Calendar calendar = Calendar.getInstance();//用于expire的calendar实例，后来为了得到时间戳又拿了回来
+        Date date = calendar.getTime();//时间戳，防止token一直相同
+        map.put(JWT_TOKEN_TIME, date.toString());
 //        calendar.add(Calendar.DATE,1);//在api-passenger里已经实现了redis中的过期设置，所以不再需要
 //        Date date = calendar.getTime();
 
@@ -71,7 +74,7 @@ public class JwtUtils {
         }catch (Exception e){
 
         }
-        return null;
+        return tokenResult;
     }
 
     public static void main(String[] args) {

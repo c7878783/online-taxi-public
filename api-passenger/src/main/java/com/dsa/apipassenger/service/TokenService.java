@@ -38,8 +38,8 @@ public class TokenService {
             return ResponseResult.fail(CommonStatusEnum.TOKEN_ERROR.getCode(),CommonStatusEnum.TOKEN_ERROR.getValue());
         }
 
-        String refreshToken = JwtUtils.generatorToken(phone, identity, TokenConstants.REFRESH_TOKEN_TYPE);
         String accessToken = JwtUtils.generatorToken(phone, identity, TokenConstants.ACCESS_TOKEN_TYPE);
+        String refreshToken = JwtUtils.generatorToken(phone, identity, TokenConstants.REFRESH_TOKEN_TYPE);
 
         stringRedisTemplate.opsForValue().set(accessTokenKey, accessToken, 10, TimeUnit.DAYS);
         stringRedisTemplate.opsForValue().set(refreshTokenKey, refreshToken, 11, TimeUnit.DAYS);
