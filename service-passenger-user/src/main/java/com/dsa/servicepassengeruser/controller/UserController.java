@@ -18,4 +18,13 @@ public class UserController {
         System.out.println("手机号是" + passengerPhone);
         return userService.loginOrRegister(passengerPhone);
     }
+
+    /**
+     * POST /user 和 GET /user 是不同的 HTTP 方法，Spring 允许不同方法使用相同路径
+     */
+    @GetMapping("/user/{phone}")
+    public ResponseResult getUser(@PathVariable("phone") String passengerPhone){
+//        String passengerPhone = verificationCodeDTO.getPassengerPhone();
+        return userService.getUserByPhone(passengerPhone);
+    }
 }

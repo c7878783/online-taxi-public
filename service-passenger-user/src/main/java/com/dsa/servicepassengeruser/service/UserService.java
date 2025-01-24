@@ -1,5 +1,6 @@
 package com.dsa.servicepassengeruser.service;
 
+import com.dsa.internalcommon.constant.CommonStatusEnum;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.PassengerUser;
 import com.dsa.servicepassengeruser.mapper.PassengerUserMapper;
@@ -39,6 +40,25 @@ public class UserService {
             System.out.println(passengerUsers);
         }
         return ResponseResult.success();
+    }
+
+    /**
+     * 根据手机号查询用户信息，用在token访问情况下
+     * @param passengerPhone 手机号
+     * @return
+     */
+    public ResponseResult getUserByPhone(String passengerPhone) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("passenger_phone", passengerPhone);
+        List<PassengerUser> passengerUsers = passengerUserMapper.selectByMap(map);
+
+
+        if (passengerUsers.size() == 0) {
+            return ResponseResult.fail(CommonStatusEnum.USER_NOT_EXISTS.getCode(), CommonStatusEnum.USER_NOT_EXISTS.getValue());
+        }else {
+            PassengerUser passengerUser = passengerUsers.get(0);//get(0)是因为有的手机号可能在库中重复
+            return ResponseResult.success(passengerUser);
+        }
     }
 }
 
