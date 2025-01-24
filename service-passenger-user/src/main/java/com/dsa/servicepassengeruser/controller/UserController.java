@@ -21,6 +21,7 @@ public class UserController {
 
     /**
      * POST /user 和 GET /user 是不同的 HTTP 方法，Spring 允许不同方法使用相同路径
+     * 参数用body去传，会有bug报错，改成显式的传参数,这是一个get和post有关的bug：feign调用post转get
      */
     @GetMapping("/user/{phone}")
     public ResponseResult getUser(@PathVariable("phone") String passengerPhone){

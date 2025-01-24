@@ -10,5 +10,5 @@ public interface ServicePassengerUserClient {
     @RequestMapping(method = RequestMethod.POST, value = "/user")
     public ResponseResult loginOrRegister(@RequestBody VerificationCodeDTO verificationCodeDTO);
     @RequestMapping(method = RequestMethod.GET, value = "/user/{phone}")
-    public ResponseResult getUser(@PathVariable("phone") String passengerPhone);//参数用body去传，会有bug报错
+    public ResponseResult getUser(@PathVariable("phone") String passengerPhone);//参数用body去传，会有bug报错，改成显式的传参数
 }
