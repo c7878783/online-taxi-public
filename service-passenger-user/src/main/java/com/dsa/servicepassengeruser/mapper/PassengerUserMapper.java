@@ -2,7 +2,7 @@ package com.dsa.servicepassengeruser.mapper;
 import java.util.Map;
 
 //import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.dsa.servicepassengeruser.pojo.PassengerUser;
+import com.dsa.internalcommon.pojo.PassengerUser;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

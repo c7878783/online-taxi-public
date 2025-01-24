@@ -16,6 +16,11 @@ public class VerificationCodeController {
     @Autowired
     VerificationCodeService verificationCodeService;
 
+    /**
+     * 验证码生成
+     * @param verificationCodeDTO 用来接受手机号passengerPhone的Body体变量
+     * @return 调用service生成验证码
+     */
     @GetMapping("/verification-code")
     public ResponseResult verificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO){
 
@@ -23,6 +28,11 @@ public class VerificationCodeController {
         return verificationCodeService.generatorCode(passengerPhone);
     }
 
+    /**
+     * 校验验证码
+     * @param verificationCodeDTO 用来接受手机号和验证码的Body体变量
+     * @return 调用service检查手机号和验证码并查询(注册)用户，发布token
+     */
     @PostMapping("/verification-code-check")
     public ResponseResult checkCode(@RequestBody VerificationCodeDTO verificationCodeDTO){
 

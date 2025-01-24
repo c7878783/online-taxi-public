@@ -24,6 +24,7 @@ public class TokenService {
         //解析refreshtoken
         TokenResult tokenResult = JwtUtils.checkToken(refreshTokenSrc);
         if (tokenResult == null){
+            System.out.println("token未通过规则检查");
             return ResponseResult.fail(CommonStatusEnum.TOKEN_ERROR.getCode(),CommonStatusEnum.TOKEN_ERROR.getValue());
         }
 

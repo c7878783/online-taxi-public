@@ -1,4 +1,4 @@
-package com.dsa.servicepassengeruser.pojo;
+package com.dsa.internalcommon.pojo;
 
 import lombok.Data;
 
@@ -14,5 +14,5 @@ public class PassengerUser {
     private String passengerName;
     private byte passengerGender;
     private byte state;
-
+    private String profilePhoto;
 }
