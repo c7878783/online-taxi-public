@@ -16,7 +16,7 @@ public class ForecastPriceService {
             log.info("目的地纬度：" + destLatitude);
 
 
-            log.info("调用地图服务，查询距离和时长");
+            log.info("调用地图服务service-map，查询距离和时长");
 
             log.info("读取计价规则");
 

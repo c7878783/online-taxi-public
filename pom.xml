@@ -104,5 +104,6 @@
         <module>internal-common</module>
         <module>service-passenger-user</module>
         <module>service-price</module>
+        <module>service-map</module>
     </modules>
 </project>
