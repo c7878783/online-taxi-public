@@ -7,8 +7,8 @@ public class PriceRule {
 
     private String cityCode;
     private String vehicleType;
-    private double startFare;
-    private int startMile;
-    private double unitPricePerMile;
-    private double unitPricePerMinute;
+    private Double startFare;
+    private Integer startMile;
+    private Double unitPricePerMile;
+    private Double unitPricePerMinute;
 }
