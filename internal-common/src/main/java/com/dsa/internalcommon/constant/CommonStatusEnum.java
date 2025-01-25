@@ -23,7 +23,11 @@ public enum CommonStatusEnum {
     /**
      * 用户提示：1200-1299
      */
-    USER_NOT_EXISTS(1299, "当前用户不存在")
+    USER_NOT_EXISTS(1299, "当前用户不存在"),
+    /**
+     * 计价规则类提示：1300-1399
+     */
+    PRICE_RULE_EMPTY(1399, "计价规则不存在")
     ;
     @Getter
     private int code;

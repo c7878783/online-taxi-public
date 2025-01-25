@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsa.serviceprice.mapper.PriceRuleMapper">
+    <!--resultmap要在下面显式的引用在result'map中-->
+    <resultMap id="PriceResultMap" type="com.dsa.internalcommon.pojo.PriceRule">
+        <result property="cityCode" column="city_code"/>
+        <result property="vehicleType" column="vehicle_type"/>
+        <result property="startFare" column="start_fare"/>
+        <result property="startMile" column="start_mile"/>
+        <result property="unitPricePerMile" column="unit_price_per_mile"/>
+        <result property="unitPricePerMinute" column="unit_price_per_minute"/>
+    </resultMap>
+
+    <select id="selectByMap" parameterType="java.util.Map" resultMap="PriceResultMap">
+        SELECT * FROM price_rule
+        <where>
+            <if test="city_code != null">
+                AND city_code = #{city_code}
+            </if>
+            <if test="vehicle_type != null">
+                AND vehicle_type = #{vehicle_type}
+            </if>
+        </where>
+    </select>
+
+</mapper>
