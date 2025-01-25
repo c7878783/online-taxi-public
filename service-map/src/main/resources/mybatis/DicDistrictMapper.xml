@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dsa.servicemap.mapper.DicDistrictMapper">
+    <!--resultmap要在下面显式的引用在result'map中-->
+    <resultMap id="DicDistrictResultMap" type="com.dsa.internalcommon.pojo.DicDistrict">
+        <result property="addressCode" column="address_code"/>
+        <result property="addressName" column="address_name"/>
+        <result property="parentAddressCode" column="parent_address_code"/>
+        <result property="level" column="level"/>
+    </resultMap>
+
+    <select id="selectByMap" parameterType="java.util.Map" resultMap="DicDistrictResultMap">
+        SELECT * FROM dic_district
+        <where>
+            <if test="address_code != null">
+                AND address_code = #{address_code}
+            </if>
+        </where>
+    </select>
+
+</mapper>
