@@ -3,6 +3,9 @@ package com.dsa.internalcommon.pojo;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Data
 public class DriverUser {
 
@@ -31,8 +34,8 @@ public class DriverUser {
     private LocalDate contractOn;
     private LocalDate contractOff;
     private byte state;
-    private byte flag;
-    private LocalDate gmtCreate;
-    private LocalDate gmtModified;
+
+    private LocalDateTime gmtCreate;
+    private LocalDateTime gmtModified;
 
 }
