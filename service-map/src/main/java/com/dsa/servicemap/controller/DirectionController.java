@@ -13,11 +13,11 @@ public class DirectionController {
     @Autowired
     private DirectionService directionService;
 
-    @GetMapping("/direction/driving/{depLongitude}&{depLatitude}&{destLongitude}&{destLatitude}")
-    public ResponseResult<DirectionResponse> direction(@PathVariable("depLongitude") String depLongitude,
-                                                       @PathVariable("depLatitude") String depLatitude,
-                                                       @PathVariable("destLongitude") String destLongitude,
-                                                       @PathVariable("destLatitude") String destLatitude){
+    @GetMapping("/direction/driving")
+    public ResponseResult<DirectionResponse> direction(@RequestParam("depLongitude") String depLongitude,
+                                                       @RequestParam("depLatitude") String depLatitude,
+                                                       @RequestParam("destLongitude") String destLongitude,
+                                                       @RequestParam("destLatitude") String destLatitude){
 
 //        String depLongitude = forecastPriceDTO.getDepLongitude();
 //        String depLatitude = forecastPriceDTO.getDepLatitude();

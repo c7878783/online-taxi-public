@@ -34,4 +34,5 @@ public class MapDicDistrictClient {
 
         return forEntity.getBody();
     }
+
 }

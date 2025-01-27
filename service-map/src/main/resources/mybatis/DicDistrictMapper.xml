@@ -20,4 +20,13 @@
         </where>
     </select>
 
+    <!-- 定义 Insert 方法 -->
+    <insert id="insert" parameterType="com.dsa.servicemap.mapper.DicDistrictMapper">
+        INSERT INTO dic_district (
+            address_code, address_name, parent_address_code, level
+        ) VALUES (
+                     #{addressCode}, #{addressName}, #{parentAddressCode}, #{level}
+                 )
+    </insert>
+
 </mapper>

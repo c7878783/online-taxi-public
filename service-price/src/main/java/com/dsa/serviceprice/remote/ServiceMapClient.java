@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient("service-map")
 public interface ServiceMapClient {
 
-    @GetMapping("/direction/driving/{depLongitude}&{depLatitude}&{destLongitude}&{destLatitude}")
-    public ResponseResult<DirectionResponse> direction(@PathVariable("depLongitude") String depLongitude,
-                                                       @PathVariable("depLatitude") String depLatitude,
-                                                       @PathVariable("destLongitude") String destLongitude,
-                                                       @PathVariable("destLatitude") String destLatitude);
+    @GetMapping("/direction/driving")
+    public ResponseResult<DirectionResponse> direction(@RequestParam("depLongitude") String depLongitude,
+                                                       @RequestParam("depLatitude") String depLatitude,
+                                                       @RequestParam("destLongitude") String destLongitude,
+                                                       @RequestParam("destLatitude") String destLatitude);
 }

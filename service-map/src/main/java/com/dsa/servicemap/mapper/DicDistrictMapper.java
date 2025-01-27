@@ -10,4 +10,6 @@ import java.util.Map;
 @Mapper
 public interface DicDistrictMapper {
     List<DicDistrict> selectByMap(Map<String, Object> map);
+
+    int insert(DicDistrict dicDistrict);
 }
