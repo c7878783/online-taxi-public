@@ -2,6 +2,7 @@ package com.dsa.apiboss.remote;
 
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.Car;
+import com.dsa.internalcommon.pojo.DriverCarBindingRelationship;
 import com.dsa.internalcommon.pojo.DriverUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,4 +21,9 @@ public interface ServiceDriverUserClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/car")
     public ResponseResult addCar(@RequestBody Car car);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/diverCarRelationship/bind")
+    public ResponseResult bind(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship);
+    @RequestMapping(method = RequestMethod.POST, value = "/diverCarRelationship/unbind")
+    public ResponseResult unbind(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship);
 }

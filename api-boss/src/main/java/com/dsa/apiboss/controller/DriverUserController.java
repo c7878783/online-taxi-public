@@ -5,6 +5,7 @@ import com.dsa.apiboss.service.CarService;
 import com.dsa.apiboss.service.DriverUserService;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.Car;
+import com.dsa.internalcommon.pojo.DriverCarBindingRelationship;
 import com.dsa.internalcommon.pojo.DriverUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,18 @@ public class DriverUserController {
     public ResponseResult updateDriverUser(@RequestBody DriverUser driverUser){
 
         return driverUserService.updateDriverUser(driverUser);
+    }
+
+    @PostMapping("/diverCarRelationship/bind")
+    public ResponseResult bind(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship){
+
+        return carService.bind(driverCarBindingRelationship);
+    }
+
+    @PostMapping("/diverCarRelationship/unbind")
+    public ResponseResult unbind(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship){
+
+        return carService.unbind(driverCarBindingRelationship);
     }
 
     @PostMapping("/car")
