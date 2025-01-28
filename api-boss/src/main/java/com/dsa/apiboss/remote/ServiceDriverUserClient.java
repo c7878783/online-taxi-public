@@ -1,6 +1,7 @@
 package com.dsa.apiboss.remote;
 
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.pojo.Car;
 import com.dsa.internalcommon.pojo.DriverUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,4 +17,7 @@ public interface ServiceDriverUserClient {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/user")
     public ResponseResult updateDriverUser(@RequestBody DriverUser driverUser);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/car")
+    public ResponseResult addCar(@RequestBody Car car);
 }

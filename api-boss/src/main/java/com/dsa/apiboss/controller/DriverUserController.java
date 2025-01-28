@@ -1,8 +1,10 @@
 package com.dsa.apiboss.controller;
 
 import com.dsa.apiboss.remote.ServiceDriverUserClient;
+import com.dsa.apiboss.service.CarService;
 import com.dsa.apiboss.service.DriverUserService;
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.pojo.Car;
 import com.dsa.internalcommon.pojo.DriverUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +17,8 @@ public class DriverUserController {
 
     @Autowired
     DriverUserService driverUserService;
+    @Autowired
+    CarService carService;
 
     @PostMapping("/driver-user")
     public ResponseResult addDriverUser(@RequestBody DriverUser driverUser){
@@ -27,4 +31,11 @@ public class DriverUserController {
 
         return driverUserService.updateDriverUser(driverUser);
     }
+
+    @PostMapping("/car")
+    public ResponseResult addCar(@RequestBody Car car){
+
+        return carService.addCar(car);
+    }
+
 }

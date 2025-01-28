@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 public class DriverUser {
 
-    private Long id;
+    private Long id;//主键
     private String address;
     private String driverName;
     private String driverPhone;
