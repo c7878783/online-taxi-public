@@ -1,5 +1,7 @@
 package com.dsa.servicedriveruser.service;
 
+import com.dsa.internalcommon.constant.CommonStatusEnum;
+import com.dsa.internalcommon.constant.DriverCarConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.DriverUser;
 import com.dsa.servicedriveruser.mapper.DriverUserMapper;
@@ -8,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class DriverUserService {
@@ -34,5 +38,17 @@ public class DriverUserService {
         driverUser.setGmtModified(now);
         driverUserMapper.updateById(driverUser);
         return ResponseResult.success();
+    }
+
+    public ResponseResult<DriverUser> getDriverUserByPhone(String  driverPhone){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("driver_phone", driverPhone);
+        map.put("state", DriverCarConstants.DRIVER_STATE_VALID);
+        List<DriverUser> driverUsers = driverUserMapper.selectByMap(map);
+        if (driverUsers.isEmpty()){
+            return ResponseResult.fail(CommonStatusEnum.DRIVER_NOT_EXISTS.getCode(),CommonStatusEnum.DRIVER_NOT_EXISTS.getValue());
+        }
+        DriverUser driverUser = driverUsers.get(0);
+        return ResponseResult.success(driverUser);
     }
 }
