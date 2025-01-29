@@ -41,7 +41,7 @@ public class VerificationCodeService {
         int numberCode = numberCodeResponse.getData().getNumberCode();
 
 //      存入redis
-        String key = RedisPrefixUtils.generatorKeyByPhone(passengerPhone);
+        String key = RedisPrefixUtils.generatorKeyByPhone(passengerPhone, IdentityConstants.PASSENGER_IDENTITY);
         stringRedisTemplate.opsForValue().set(key, numberCode + "", 2, TimeUnit.MINUTES);
 
         return ResponseResult.success();
@@ -49,7 +49,7 @@ public class VerificationCodeService {
 
     public ResponseResult checkCode(String passengerPhone, String verificationCode){
         System.out.println("去redis读对应手机号的验证码");
-        String key = RedisPrefixUtils.generatorKeyByPhone(passengerPhone);
+        String key = RedisPrefixUtils.generatorKeyByPhone(passengerPhone, IdentityConstants.PASSENGER_IDENTITY);
         String codeRedis = stringRedisTemplate.opsForValue().get(key);
         if (StringUtils.isBlank(codeRedis)){
             System.out.println("用户未获取验证码");
@@ -60,8 +60,11 @@ public class VerificationCodeService {
             return ResponseResult.fail(CommonStatusEnum.VERIFY_CODE_ERROR.getCode(), CommonStatusEnum.VERIFY_CODE_ERROR.getValue());
         }
         System.out.println("判断是否已存在用户");
-        VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO(passengerPhone, verificationCode);
+        VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
+        verificationCodeDTO.setPassengerPhone(passengerPhone);
+        verificationCodeDTO.setVerificationCode(verificationCode);
         ResponseResult responseResult = servicePassengerUserClient.loginOrRegister(verificationCodeDTO);
+
         System.out.println("发令牌");
         String accessToken = JwtUtils.generatorToken(passengerPhone, IdentityConstants.PASSENGER_IDENTITY, TokenConstants.ACCESS_TOKEN_TYPE);//这个1表示乘客，应该用常量
         String refreshToken = JwtUtils.generatorToken(passengerPhone, IdentityConstants.PASSENGER_IDENTITY, TokenConstants.REFRESH_TOKEN_TYPE);//这个1表示乘客，应该用常量

@@ -4,12 +4,17 @@ import com.dsa.apidriver.remote.ServiceDriverUserClient;
 import com.dsa.apidriver.remote.ServiceVerificationCodeClient;
 import com.dsa.internalcommon.constant.CommonStatusEnum;
 import com.dsa.internalcommon.constant.DriverCarConstants;
+import com.dsa.internalcommon.constant.IdentityConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.responese.DriverUserExistsResponse;
 import com.dsa.internalcommon.responese.NumberCodeResponse;
+import com.dsa.internalcommon.util.RedisPrefixUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -19,6 +24,8 @@ public class VerificationCodeService {
     ServiceDriverUserClient serviceDriverUserClient;
     @Autowired
     ServiceVerificationCodeClient serviceVerificationCodeClient;
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
 
     public ResponseResult checkAndSendVerificationCode(String driverPhone){
         //查询service-driver-user，该说记号是否存在
@@ -34,8 +41,9 @@ public class VerificationCodeService {
         NumberCodeResponse numberCodeResponse = numberCodeResult.getData();
         int numberCode = numberCodeResponse.getNumberCode();
         log.info("验证码是"+numberCode);
-
-        //调用第三方验证码
+        String key = RedisPrefixUtils.generatorKeyByPhone(driverPhone, IdentityConstants.DRIVER_IDENTITY);
+        stringRedisTemplate.opsForValue().set(key, numberCode+"", 2, TimeUnit.MINUTES);
+        //调用第三方验证码,阿里、腾讯、华信、容联短信服务
 
         //存入redis
 
