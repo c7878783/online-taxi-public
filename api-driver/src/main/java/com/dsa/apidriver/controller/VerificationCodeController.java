@@ -5,10 +5,7 @@ import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.request.VerificationCodeDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -23,5 +20,20 @@ public class VerificationCodeController {
 
         log.info("准备进入verificationCodeService：checkAndSendVerificationCode"+" 手机号是：" +driverPhone);
         return verificationCodeService.checkAndSendVerificationCode(driverPhone);
+    }
+
+
+    /**
+     * 校验验证码
+     * @param verificationCodeDTO 用来接受手机号和验证码的Body体变量
+     * @return 调用service检查手机号和验证码并查询(注册)用户，发布token
+     */
+    @PostMapping("/verification-code-check")
+    public ResponseResult checkCode(@RequestBody VerificationCodeDTO verificationCodeDTO){
+
+        String driverPhone = verificationCodeDTO.getDriverPhone();
+        String verificationCode = verificationCodeDTO.getVerificationCode();
+        System.out.println(driverPhone + ":" + verificationCode);
+        return verificationCodeService.checkCode(driverPhone, verificationCode);
     }
 }
