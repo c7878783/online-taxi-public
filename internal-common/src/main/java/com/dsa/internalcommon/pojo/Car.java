@@ -43,5 +43,7 @@ public class Car {
     private LocalDateTime gmtModified;
 
     private String tid;
+    private String trid;
+    private String trname;
 
 }

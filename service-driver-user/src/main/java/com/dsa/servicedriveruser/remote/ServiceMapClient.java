@@ -2,6 +2,7 @@ package com.dsa.servicedriveruser.remote;
 
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.responese.TerminalResponse;
+import com.dsa.internalcommon.responese.TraceResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ServiceMapClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/terminal/add")
-    public ResponseResult<TerminalResponse> add(@RequestParam String name);
+    public ResponseResult<TerminalResponse> addTerminal(@RequestParam String name);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/trace/add")
+    public ResponseResult<TraceResponse> addTrace(@RequestParam String tid);
 
 }
