@@ -42,4 +42,6 @@ public class Car {
     private LocalDateTime gmtCreate;
     private LocalDateTime gmtModified;
 
+    private String tid;
+
 }

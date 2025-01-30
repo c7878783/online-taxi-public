@@ -48,7 +48,7 @@ public class TerminalClient {
         JSONObject data = jsonObject.getJSONObject("data");
         String tid = data.getString("tid");
         TerminalResponse terminalResponse = new TerminalResponse();
-        terminalResponse.setTid(sid);
+        terminalResponse.setTid(tid);
 
         return ResponseResult.success(terminalResponse);
     }

@@ -1,6 +1,7 @@
 package com.dsa.servicemap.controller;
 
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.responese.TerminalResponse;
 import com.dsa.servicemap.service.TerminalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +15,7 @@ public class TerminalController {
     @Autowired
     TerminalService terminalService;
     @PostMapping("/add")
-    public ResponseResult add(String name){
+    public ResponseResult<TerminalResponse> add(String name){
 
         return terminalService.add(name);
     }
