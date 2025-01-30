@@ -1,0 +1,28 @@
+key：9d6c50bd7e7e07a18f22be091534c47a
+
+创建服务
+{
+    "errcode": 10000,
+    "errmsg": "OK",
+    "data": {
+        "name": "飞滴出行service",
+        "sid": 1044731
+    }
+}
+
+创建终端
+{
+    "errcode": 10000,
+    "errmsg": "OK",
+    "data": {
+        "name": "车辆1",
+        "tid": 1163652990,
+        "sid": 1044731
+    }
+}
+
+删除终端
+{
+    "errcode": 10000,
+    "errmsg": "OK"
+}
