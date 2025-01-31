@@ -15,9 +15,9 @@ public class TerminalController {
     @Autowired
     TerminalService terminalService;
     @PostMapping("/add")
-    public ResponseResult<TerminalResponse> add(String name){
+    public ResponseResult<TerminalResponse> add(String name, String desc){
 
-        return terminalService.add(name);
+        return terminalService.add(name,desc);
     }
 
 }

@@ -11,8 +11,8 @@ public class TerminalService {
     @Autowired
     TerminalClient terminalClient;
 
-    public ResponseResult add(String name){
+    public ResponseResult add(String name, String desc){
 
-        return terminalClient.add(name);
+        return terminalClient.add(name, desc);
     }
 }

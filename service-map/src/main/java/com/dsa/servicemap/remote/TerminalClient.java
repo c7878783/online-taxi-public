@@ -2,7 +2,6 @@ package com.dsa.servicemap.remote;
 
 import com.dsa.internalcommon.constant.AmapConfigConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
-import com.dsa.internalcommon.responese.ServiceResponse;
 import com.dsa.internalcommon.responese.TerminalResponse;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ public class TerminalClient {
     @Autowired
     RestTemplate restTemplate;
 
-    public ResponseResult add(String name){
+    public ResponseResult add(String name, String desc){
         StringBuilder url = new StringBuilder();
         url.append(AmapConfigConstants.TERMINAL_ADD_URL)
                 .append("?")
@@ -32,6 +31,8 @@ public class TerminalClient {
                 .append("sid="+sid)
                 .append("&")
                 .append("name="+name)
+                .append("&")
+                .append("desc="+desc)
         ;
         ResponseEntity<String> forEntity = restTemplate.postForEntity(url.toString(), null,String.class);
         String body = forEntity.getBody();
