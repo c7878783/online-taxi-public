@@ -1,5 +1,7 @@
 package com.dsa.internalcommon.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -7,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class Car {
-
+    @TableId(type = IdType.AUTO)//这个注解确保主键id在mapper调用insert方法后可以被回填
     private long id;//主键
     private String address;
     private String vehicleNo;

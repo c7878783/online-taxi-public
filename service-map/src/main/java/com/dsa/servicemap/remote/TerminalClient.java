@@ -3,6 +3,7 @@ package com.dsa.servicemap.remote;
 import com.dsa.internalcommon.constant.AmapConfigConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.responese.TerminalResponse;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@Slf4j
 public class TerminalClient {
 
     @Value("${amap.key}")
@@ -34,6 +36,7 @@ public class TerminalClient {
                 .append("&")
                 .append("desc="+desc)
         ;
+        log.info(url.toString());
         ResponseEntity<String> forEntity = restTemplate.postForEntity(url.toString(), null,String.class);
         String body = forEntity.getBody();
         JSONObject jsonObject = JSONObject.fromObject(body);
