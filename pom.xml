@@ -100,13 +100,14 @@
     </build>
     <modules>
         <module>api-passenger</module>
-        <module>service-verificationcode</module>
+        <module>api-boss</module>
+        <module>api-driver</module>
         <module>internal-common</module>
+        <module>service-verificationcode</module>
         <module>service-passenger-user</module>
         <module>service-price</module>
         <module>service-map</module>
         <module>service-driver-user</module>
-        <module>api-boss</module>
-        <module>api-driver</module>
+        <module>service-order</module>
     </modules>
 </project>
