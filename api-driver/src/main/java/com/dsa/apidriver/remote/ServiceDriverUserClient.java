@@ -1,6 +1,7 @@
 package com.dsa.apidriver.remote;
 
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.pojo.Car;
 import com.dsa.internalcommon.pojo.DriverUser;
 import com.dsa.internalcommon.responese.DriverUserExistsResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,4 +15,7 @@ public interface ServiceDriverUserClient {
 
     @RequestMapping (method = RequestMethod.GET, value = "/check-driver/{driverPhone}")
     public ResponseResult<DriverUserExistsResponse> getDriverUser(@PathVariable String driverPhone);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/car")
+    public ResponseResult<Car> getCarById(@RequestParam Long carId);
 }

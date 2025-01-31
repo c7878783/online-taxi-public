@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class CarService {
@@ -41,4 +43,11 @@ public class CarService {
         return ResponseResult.success();
     }
 
+    public ResponseResult getCarById(Long carId) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id",carId);
+        List<Car> cars = carMapper.selectByMap(map);
+
+        return ResponseResult.success(cars.get(0));
+    }
 }
