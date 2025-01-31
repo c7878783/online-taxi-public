@@ -5,7 +5,6 @@ public class AmapConfigConstants {
     public static final String DIRECTIONURL=
             "https://restapi.amap.com/v3/direction/driving";
 
-
     public static final String DISTRICT_URL=
             "https://restapi.amap.com/v3/config/district";
 
@@ -14,6 +13,9 @@ public class AmapConfigConstants {
 
     public static final String TERMINAL_ADD_URL=
             "https://tsapi.amap.com/v1/track/terminal/add";
+
+    public static final String TERMINAL_AROUND_SEARCH=
+            "https://tsapi.amap.com/v1/track/terminal/aroundsearch";
 
     public static final String TRACE_ADD_URL=
             "https://tsapi.amap.com/v1/track/trace/add";
