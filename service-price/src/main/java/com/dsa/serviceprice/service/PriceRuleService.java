@@ -119,4 +119,19 @@ public class PriceRuleService {
         }
 
     }
+
+    public ResponseResult<Boolean> isExists(String cityCode, String vehicleType) {
+        QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("city_code", cityCode);
+        queryWrapper.eq("vehicle_type", vehicleType);
+        queryWrapper.orderByDesc("fare_version");
+        List<PriceRule> priceRuleList = priceRuleMapper.selectList(queryWrapper);
+
+        if (priceRuleList.size() > 0){
+            return ResponseResult.success(true);
+        }else{
+            return ResponseResult.success(false);
+        }
+
+    }
 }

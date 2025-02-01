@@ -47,7 +47,8 @@ public enum CommonStatusEnum {
      * 订单相关：1600-1699
      */
     ORDER_EXISTS(1600, "已有进行中的订单"),
-    DEVICE_IS_BLACK(1601, "该设备在短时间内多次下单，请稍后重试")
+    DEVICE_IS_BLACK(1601, "该设备在短时间内多次下单，请稍后重试"),
+
     ;
     @Getter
     private int code;
