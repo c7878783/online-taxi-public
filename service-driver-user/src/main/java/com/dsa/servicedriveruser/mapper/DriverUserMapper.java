@@ -11,5 +11,5 @@ import java.util.Map;
 @Mapper
 public interface DriverUserMapper extends BaseMapper<DriverUser> {
 
-    public int select1(String arg);
+    public int selectDriverUserCountByCityCode(String arg);
 }

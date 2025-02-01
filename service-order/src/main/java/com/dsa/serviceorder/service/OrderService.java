@@ -10,6 +10,7 @@ import com.dsa.internalcommon.request.OrderRequest;
 import com.dsa.internalcommon.util.RedisPrefixUtils;
 import com.dsa.serviceorder.mapper.OrderMapper;
 import com.dsa.serviceorder.remote.ServiceClient;
+import com.dsa.serviceorder.remote.ServiceDriverUserClient;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class OrderService {
     ServiceClient serviceClient;
 
     @Autowired
+    ServiceDriverUserClient serviceDriverUserClient;
+
+    @Autowired
     StringRedisTemplate stringRedisTemplate;
 
     @Autowired
@@ -44,6 +48,10 @@ public class OrderService {
         //下单的城市和车型是否支持业务
         if (!ifPriceRuleExists(orderRequest.getFareType())){
             return ResponseResult.fail(CommonStatusEnum.CITY_NOT_SETVICE.getCode(), CommonStatusEnum.CITY_NOT_SETVICE.getValue());
+        }
+        //下单的城市是否有司机
+        if (!serviceDriverUserClient.isAvailableDriver(orderRequest.getAddress()).getData()){
+            return ResponseResult.fail(CommonStatusEnum.CITY_DRIVER_EMPTY.getCode(), CommonStatusEnum.CITY_DRIVER_EMPTY.getValue());
         }
         //判断下单设备是否是黑名单设备
         if (isBlackDevice(orderRequest.getDeviceCode())){

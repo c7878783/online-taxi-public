@@ -48,7 +48,8 @@ public enum CommonStatusEnum {
      */
     ORDER_EXISTS(1600, "已有进行中的订单"),
     DEVICE_IS_BLACK(1601, "该设备在短时间内多次下单，请稍后重试"),
-    CITY_NOT_SETVICE(1602, "当前城市未开通服务")
+    CITY_NOT_SETVICE(1602, "当前城市未开通服务"),
+    CITY_DRIVER_EMPTY(1603, "当前城市没有可用司机")
     ;
     @Getter
     private int code;

@@ -23,7 +23,7 @@ public class TestController {
     }
 
     @GetMapping("/test-xml")
-    public int testXml(String args){
-        return driverUserMapper.select1(args);
+    public int testXml(@RequestParam String cityCode){
+        return driverUserMapper.selectDriverUserCountByCityCode(cityCode);
     }
 }
