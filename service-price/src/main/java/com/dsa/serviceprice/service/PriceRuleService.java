@@ -113,7 +113,7 @@ public class PriceRuleService {
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(), CommonStatusEnum.PRICE_RULE_EMPTY.getValue());
         }
         if (newestVersion.getData().getFareVersion() == fareVersion){
-            return ResponseResult.success("已是最新计价规则");
+            return ResponseResult.success(true);
         }else {
             return ResponseResult.success(false);
         }

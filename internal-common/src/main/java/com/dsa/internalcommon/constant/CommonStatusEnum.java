@@ -30,6 +30,7 @@ public enum CommonStatusEnum {
     PRICE_RULE_EMPTY(1300, "计价规则不存在"),
     PRICE_RULE_EXISTS(1301, "城市与车型对应计价规则存在,只允许修改"),
     PRICE_RULE_NOT_EDIT(1302, "新添规则与已有规则完全相同"),
+    PRICE_RULE_CHANGED(1303, "计价规则有变，当前价格不是最新"),
     /**
      * 地图信息：1400-1499
      */
