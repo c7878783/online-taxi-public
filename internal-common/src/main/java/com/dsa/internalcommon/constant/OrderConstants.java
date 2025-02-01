@@ -1,7 +1,8 @@
 package com.dsa.internalcommon.constant;
 
 public class OrderConstants {
-
+    //订单撤销/无效：0
+    public static final int ORDER_INVALID = 0;
     //订单开始：1
     public static final int ORDER_START = 1;
     //司机接单：2

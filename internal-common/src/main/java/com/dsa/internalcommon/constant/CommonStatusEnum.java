@@ -43,7 +43,11 @@ public enum CommonStatusEnum {
     DRIVER_NOT_EXISTS(1502, "司机不存在"),
     DRIVER_BIND_EXISTS(1503, "司机已绑定车辆，请先解绑"),
     CAR_BIND_EXISTS(1504, "车辆已被其他司机绑定，请先解绑"),
-
+    /**
+     * 订单相关：1600-1699
+     */
+    ORDER_EXISTS(1600, "已有进行中的订单"),
+    DEVICE_IS_BLACK(1601, "该设备在短时间内多次下单，请稍后重试")
     ;
     @Getter
     private int code;

@@ -4,6 +4,7 @@ public class RedisPrefixUtils {
 
     public static String verificationCodePrefix = "verification-code-";
     public static String tokenPrefix = "token-";
+    public static String blackDeviceCodePrefix = "black-device-";
 
     /**
      * @param passengerPhone 手机号码

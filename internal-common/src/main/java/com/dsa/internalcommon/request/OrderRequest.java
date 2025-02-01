@@ -29,5 +29,6 @@ public class OrderRequest {
     private String fareType;//设定为城市address、车型vehicleType、版本号fareVersion三合一相加字符串
 
     private Integer fareVersion;
-
+    //请求设备唯一码
+    private String deviceCode;
 }
