@@ -45,11 +45,6 @@ public class OrderService {
         if (!ifPriceRuleExists(orderRequest.getFareType())){
             return ResponseResult.fail(CommonStatusEnum.CITY_NOT_SETVICE.getCode(), CommonStatusEnum.CITY_NOT_SETVICE.getValue());
         }
-        //判断计价规则是不是最新
-        ResponseResult<Boolean> isNew = serviceClient.isNew(orderRequest.getFareType(), orderRequest.getFareVersion());
-        if (!isNew.getData()){
-            return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_CHANGED.getCode(),CommonStatusEnum.PRICE_RULE_CHANGED.getValue());
-        }
         //判断下单设备是否是黑名单设备
         if (isBlackDevice(orderRequest.getDeviceCode())){
             return ResponseResult.fail(CommonStatusEnum.DEVICE_IS_BLACK.getCode(), CommonStatusEnum.DEVICE_IS_BLACK.getValue());
@@ -59,7 +54,11 @@ public class OrderService {
         if (validOrderNum > 0){
             return ResponseResult.fail(CommonStatusEnum.ORDER_EXISTS.getCode(), CommonStatusEnum.ORDER_EXISTS.getValue());
         }
-
+        //判断计价规则是不是最新
+        ResponseResult<Boolean> isNew = serviceClient.isNew(orderRequest.getFareType(), orderRequest.getFareVersion());
+        if (!isNew.getData()){
+            return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_CHANGED.getCode(),CommonStatusEnum.PRICE_RULE_CHANGED.getValue());
+        }
 
         //创建订单
         Order order = new Order();
