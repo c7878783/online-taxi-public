@@ -23,7 +23,9 @@ public class ForecastPriceService {
      * @param destLatitude
      * @return
      */
-    public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude){
+    public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude,
+                                        String cityCode, String vehicleType
+    ){
 
         log.info("出发地经度：" + depLongitude);
         log.info("出发地纬度：" + depLatitude);
@@ -37,11 +39,23 @@ public class ForecastPriceService {
         forecastPriceDTO.setDepLatitude(depLatitude);
         forecastPriceDTO.setDestLongitude(destLongitude);
         forecastPriceDTO.setDestLatitude(destLatitude);
-        ResponseResult<ForecastPriceResponse> responseResult = servicePriceClient.forecastPrice(forecastPriceDTO);
-        ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();
-        forecastPriceResponse.setPrice(responseResult.getData().getPrice());
+        forecastPriceDTO.setCityCode(cityCode);
+        forecastPriceDTO.setVehicleType(vehicleType);
+        ResponseResult<ForecastPriceResponse> forecast = servicePriceClient.forecastPrice(forecastPriceDTO);
+//        ForecastPriceResponse forecastData = forecast.getData();
+//        double price = forecastData.getPrice();
+//        String cityCode = forecastData.getCityCode();
+//        String vehicleType = forecastData.getVehicleType();
+//        String fareType = forecastData.getFareType();
+//        Integer fareVersion = forecastData.getFareVersion();
+//        ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();
+//        forecastPriceResponse.setPrice(price);
+//        forecastPriceResponse.setCityCode(cityCode);
+//        forecastPriceResponse.setVehicleType(vehicleType);
+//        forecastPriceResponse.setFareType(fareType);
+//        forecastPriceResponse.setFareVersion(fareVersion);
 
-        return ResponseResult.success(forecastPriceResponse);
+        return ResponseResult.success(forecast.getData());
     }
 
 }

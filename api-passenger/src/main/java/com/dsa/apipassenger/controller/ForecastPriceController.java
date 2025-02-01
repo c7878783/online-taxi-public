@@ -25,8 +25,9 @@ public class ForecastPriceController {
         String depLatitude = forecastPriceDTO.getDepLatitude();
         String destLongitude = forecastPriceDTO.getDestLongitude();
         String destLatitude = forecastPriceDTO.getDepLatitude();
+        String cityCode = forecastPriceDTO.getCityCode();
+        String vehicleType = forecastPriceDTO.getVehicleType();
 
-
-        return forecastPriceService.forecastPrice(depLongitude,depLatitude,destLongitude,destLatitude);
+        return forecastPriceService.forecastPrice(depLongitude,depLatitude,destLongitude,destLatitude,cityCode,vehicleType);
     }
 }

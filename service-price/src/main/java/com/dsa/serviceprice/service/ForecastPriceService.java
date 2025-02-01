@@ -1,5 +1,6 @@
 package com.dsa.serviceprice.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dsa.internalcommon.constant.CommonStatusEnum;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.PassengerUser;
@@ -28,11 +29,12 @@ public class ForecastPriceService {
     @Autowired
     PriceRuleMapper priceRuleMapper;
 
-    public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude){
-        log.info("出发地经度：" + depLongitude);
-        log.info("出发地纬度：" + depLatitude);
-        log.info("目的地经度：" + destLongitude);
-        log.info("目的地纬度：" + destLatitude);
+    public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude,
+                                        String cityCode, String vehicleType){
+//        log.info("出发地经度：" + depLongitude);
+//        log.info("出发地纬度：" + depLatitude);
+//        log.info("目的地经度：" + destLongitude);
+//        log.info("目的地纬度：" + destLatitude);
 
 
         log.info("调用地图服务service-map，查询距离和时长");
@@ -48,20 +50,28 @@ public class ForecastPriceService {
         log.info("距离："+distance);
         log.info("时长："+duration);
         log.info("读取计价规则");
-        HashMap<String, Object> queryMap = new HashMap<>();
-        queryMap.put("city_code", "110000");
-        queryMap.put("vehicle_type", "1");
-
-        List<PriceRule> priceRules = priceRuleMapper.selectByMap(queryMap);
+//        HashMap<String, Object> queryMap = new HashMap<>();
+//        queryMap.put("city_code", cityCode);
+//        queryMap.put("vehicle_type", vehicleType);
+//        List<PriceRule> priceRules = priceRuleMapper.selectByMap(queryMap);
+        QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("city_code", cityCode);
+        queryWrapper.eq("vehicle_type", vehicleType);
+        queryWrapper.orderByDesc("fare_version");
+        List<PriceRule> priceRules = priceRuleMapper.selectList(queryWrapper);
         if (priceRules.size() == 0){
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(), CommonStatusEnum.PRICE_RULE_EMPTY.getValue());
         }
         PriceRule priceRule = priceRules.get(0);
-        System.out.println(priceRule);
+        log.info(priceRule.toString());
         log.info("根据距离时长和计价规则计算价格");
         Double price = gerPrice(distance, duration, priceRule);
         ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();
         forecastPriceResponse.setPrice(price);
+        forecastPriceResponse.setCityCode(cityCode);
+        forecastPriceResponse.setVehicleType(vehicleType);
+        forecastPriceResponse.setFareType(priceRule.getFareType());
+        forecastPriceResponse.setFareVersion(priceRule.getFareVersion());
 
         return ResponseResult.success(forecastPriceResponse);
     }
