@@ -120,7 +120,7 @@ public class PriceRuleService {
 
     }
 
-    public ResponseResult<Boolean> isExists(String cityCode, String vehicleType) {
+    public ResponseResult<Boolean> ifExists(String cityCode, String vehicleType) {
         QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("city_code", cityCode);
         queryWrapper.eq("vehicle_type", vehicleType);

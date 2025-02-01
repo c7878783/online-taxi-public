@@ -5,6 +5,7 @@ import com.dsa.internalcommon.constant.CommonStatusEnum;
 import com.dsa.internalcommon.constant.OrderConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.Order;
+import com.dsa.internalcommon.pojo.PriceRule;
 import com.dsa.internalcommon.request.OrderRequest;
 import com.dsa.internalcommon.util.RedisPrefixUtils;
 import com.dsa.serviceorder.mapper.OrderMapper;
@@ -40,23 +41,26 @@ public class OrderService {
 
     public ResponseResult add(OrderRequest orderRequest){
         LocalDateTime now = LocalDateTime.now();
+        //下单的城市和车型是否支持业务
+        if (!ifPriceRuleExists(orderRequest.getFareType())){
+            return ResponseResult.fail(CommonStatusEnum.CITY_NOT_SETVICE.getCode(), CommonStatusEnum.CITY_NOT_SETVICE.getValue());
+        }
         //判断计价规则是不是最新
         ResponseResult<Boolean> isNew = serviceClient.isNew(orderRequest.getFareType(), orderRequest.getFareVersion());
         if (!isNew.getData()){
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_CHANGED.getCode(),CommonStatusEnum.PRICE_RULE_CHANGED.getValue());
         }
-
         //判断下单设备是否是黑名单设备
-        String deviceCode = orderRequest.getDeviceCode();
-        if (isBlackDevice(deviceCode)){
+        if (isBlackDevice(orderRequest.getDeviceCode())){
             return ResponseResult.fail(CommonStatusEnum.DEVICE_IS_BLACK.getCode(), CommonStatusEnum.DEVICE_IS_BLACK.getValue());
         }
-
         //判断是否有正在进行中的订单
-        Long validOrderNum = isOrderGoingOn(orderRequest.getPassengerId());
+        Long validOrderNum = ifOrderGoingOn(orderRequest.getPassengerId());
         if (validOrderNum > 0){
             return ResponseResult.fail(CommonStatusEnum.ORDER_EXISTS.getCode(), CommonStatusEnum.ORDER_EXISTS.getValue());
         }
+
+
         //创建订单
         Order order = new Order();
 
@@ -69,7 +73,15 @@ public class OrderService {
         return ResponseResult.success("");
     }
 
-    private Long isOrderGoingOn(Long passengerId){
+    private boolean ifPriceRuleExists(String fareType){
+        int $ = fareType.indexOf("$");
+        String cityCode = fareType.substring(0, $);
+        String vehicleType = fareType.substring($ + 1);
+        ResponseResult<Boolean> booleanResponseResult = serviceClient.ifExists(cityCode, vehicleType);
+        return booleanResponseResult.getData();
+    }
+
+    private Long ifOrderGoingOn(Long passengerId){
         //判断有正在进行的订单（订单状态1~7）不允许下单
         QueryWrapper<Order> queryWrapper = new QueryWrapper();
         queryWrapper.eq("passenger_id", passengerId);

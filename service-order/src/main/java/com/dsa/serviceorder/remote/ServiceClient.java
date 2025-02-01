@@ -15,4 +15,7 @@ public interface ServiceClient {
     @GetMapping("/price-rule/is-new")
     public ResponseResult<Boolean> isNew(@RequestParam String fareType, @RequestParam Integer fareVersion);
 
+    @GetMapping("/price-rule/if-exists")
+    public ResponseResult<Boolean> ifExists(@RequestParam String cityCode, @RequestParam String vehicleType);
+
 }

@@ -59,9 +59,9 @@ public class PriceRuleController {
      * @return
      */
     @GetMapping("/if-exists")
-    public ResponseResult<Boolean> isExists(@RequestParam String cityCode, @RequestParam String vehicleType){
+    public ResponseResult<Boolean> ifExists(@RequestParam String cityCode, @RequestParam String vehicleType){
 
-        return priceRuleService.isExists(cityCode, vehicleType);
+        return priceRuleService.ifExists(cityCode, vehicleType);
     }
 
 }
