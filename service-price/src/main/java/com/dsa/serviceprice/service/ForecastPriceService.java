@@ -48,7 +48,7 @@ public class ForecastPriceService {
         log.info("距离："+distance);
         log.info("时长："+duration);
         log.info("读取计价规则");
-        HashMap<String, String> queryMap = new HashMap<>();
+        HashMap<String, Object> queryMap = new HashMap<>();
         queryMap.put("city_code", "110000");
         queryMap.put("vehicle_type", "1");
 

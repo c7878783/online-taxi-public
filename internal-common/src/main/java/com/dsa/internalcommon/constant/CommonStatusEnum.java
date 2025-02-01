@@ -27,19 +27,22 @@ public enum CommonStatusEnum {
     /**
      * 计价规则类提示：1300-1399
      */
-    PRICE_RULE_EMPTY(1399, "计价规则不存在"),
+    PRICE_RULE_EMPTY(1300, "计价规则不存在"),
+    PRICE_RULE_EXISTS(1301, "城市与车型对应计价规则存在,只允许修改"),
+    PRICE_RULE_NOT_EDIT(1302, "新添规则与已有规则完全相同"),
     /**
      * 地图信息：1400-1499
      */
     MAP_DISTRICT_ERROR(1400, "请求地图错误"),
     /**
-     * 司机和车辆关系
+     * 司机和车辆关系1500-1599
      */
     DRIVER_CAR_BIND_NOT_EXISTS(1500, "司机和车辆绑定关系不存在"),
     DRIVER_CAR_BIND_EXISTS(1501, "司机和车辆绑定关系已存在，请勿重复绑定"),
     DRIVER_NOT_EXISTS(1502, "司机不存在"),
     DRIVER_BIND_EXISTS(1503, "司机已绑定车辆，请先解绑"),
     CAR_BIND_EXISTS(1504, "车辆已被其他司机绑定，请先解绑"),
+
     ;
     @Getter
     private int code;

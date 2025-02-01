@@ -78,12 +78,12 @@
             <version>3.0.4</version>
             <scope>test</scope>
         </dependency>
-        <!--		&lt;!&ndash; https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter &ndash;&gt;-->
-        <!--		<dependency>-->
-        <!--			<groupId>com.baomidou</groupId>-->
-        <!--			<artifactId>mybatis-plus-boot-starter</artifactId>-->
-        <!--			<version>3.5.10.1</version>-->
-        <!--		</dependency>-->
+        		<!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter -->
+        		<dependency>
+        			<groupId>com.baomidou</groupId>
+        			<artifactId>mybatis-plus-boot-starter</artifactId>
+        			<version>3.5.10.1</version>
+        		</dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-3-starter</artifactId>
