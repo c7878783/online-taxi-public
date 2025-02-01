@@ -58,14 +58,14 @@ public class OrderService {
             return ResponseResult.fail(CommonStatusEnum.ORDER_EXISTS.getCode(), CommonStatusEnum.ORDER_EXISTS.getValue());
         }
         //创建订单
-//        Order order = new Order();
-//
-//        BeanUtils.copyProperties(orderRequest, order);
-//        order.setOrderStatus(OrderConstants.ORDER_START);
-//        order.setGmtCreate(now);
-//        order.setGmtModified(now);
-//
-//        orderMapper.insert(order);
+        Order order = new Order();
+
+        BeanUtils.copyProperties(orderRequest, order);
+        order.setOrderStatus(OrderConstants.ORDER_START);
+        order.setGmtCreate(now);
+        order.setGmtModified(now);
+
+        orderMapper.insert(order);
         return ResponseResult.success("");
     }
 
