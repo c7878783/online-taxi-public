@@ -83,12 +83,17 @@ public class TerminalClient {
         JSONArray jsonArray = data.getJSONArray("results");
         for (int i = 0; i < jsonArray.size(); i++) {
             TerminalResponse terminalResponse = new TerminalResponse();
-            JSONObject o = jsonArray.getJSONObject(i);
-            Long carId = o.getLong("desc");
-            String tid = o.getString("tid");
+            JSONObject results = jsonArray.getJSONObject(i);
+            Long carId = results.getLong("desc");
+            String tid = results.getString("tid");
             terminalResponse.setCarId(carId);
             terminalResponse.setTid(tid);
 
+            JSONObject location = results.getJSONObject("location");
+            String longitude = location.getString("longitude");
+            String latitude = location.getString("latitude");
+            terminalResponse.setLongitude(longitude);
+            terminalResponse.setLatitude(latitude);
             terminalResponseArrayList.add(terminalResponse);
 
         }

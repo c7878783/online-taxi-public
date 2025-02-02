@@ -174,7 +174,11 @@ public class OrderService {
             log.info("寻找车辆半径：" + radiusList.get(i));
             List<TerminalResponse> data = listResponseResult.getData();
             for (int j = 0; j < data.size(); j++) {
-                Long carId = data.get(j).getCarId();
+                TerminalResponse terminalResponse = data.get(j);
+                Long carId = terminalResponse.getCarId();
+                String longitude = terminalResponse.getLongitude();
+                String latitude = terminalResponse.getLatitude();
+
                 log.info("找到车辆："+carId);
                 //查询车辆信息
                 ResponseResult<OrderDriverResponse> availableDriver = serviceDriverUserClient.getAvailableDriver(carId);
@@ -187,6 +191,26 @@ public class OrderService {
                     if (validOrderNum > 0){
                         continue ;//继续找车
                     }
+                    //订单直接匹配司机
+                    //查询当前车辆信息
+                    QueryWrapper<Object> carQW = new QueryWrapper<>();
+                    carQW.eq("id", carId);
+
+                    //查询当前司机信息
+                    order.setDriverId(availableDriver.getData().getDriverId());
+                    order.setDriverPhone(availableDriver.getData().getDriverPhone());
+                    order.setCarId(availableDriver.getData().getCarId());
+                    //当前时间
+                    LocalDateTime now = LocalDateTime.now();
+                    order.setReceiveOrderTime(now);
+                    //地图中来
+                    order.setReceiveOrderCarLongitude(longitude);
+                    order.setReceiveOrderCarLatitude(latitude);
+                    //从司机和车辆来
+                    order.setLicenseId(availableDriver.getData().getLicenseId());
+                    order.setVehicleNo(availableDriver.getData().getVehicleNo());
+                    order.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
+
                     break radius;
                 }
                 //查看车辆是否可以派单

@@ -10,4 +10,9 @@ public class OrderDriverResponse {
     private String driverPhone;
 
     private Long carId;
+
+    private String licenseId; // 机动车驾驶证号
+
+    private String vehicleNo; // 车辆号牌
+
 }
