@@ -43,6 +43,7 @@ public class Order {
     private Integer encrypt; // 坐标加密标识（1:GCJ-02, 2:WGS84, 3:BD-09, 4:CGCS2000, 0:其他）
 
     private String fareType; // 运价类型编码
+    private Integer fareVersion;
 
     private String receiveOrderCarLongitude; // 接单时车辆经度
     private String receiveOrderCarLatitude; // 接单时车辆纬度

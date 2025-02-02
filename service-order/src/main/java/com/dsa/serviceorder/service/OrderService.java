@@ -79,10 +79,11 @@ public class OrderService {
         Order order = new Order();
 
         BeanUtils.copyProperties(orderRequest, order);
+
         order.setOrderStatus(OrderConstants.ORDER_START);
+        order.setFareVersion(orderRequest.getFareVersion());
         order.setGmtCreate(now);
         order.setGmtModified(now);
-
         orderMapper.insert(order);
         //实时寻找附近司机,附近存在司机才可继续
         dispatchRealTimeOrder(order);
@@ -209,8 +210,12 @@ public class OrderService {
                     //从司机和车辆来
                     order.setLicenseId(availableDriver.getData().getLicenseId());
                     order.setVehicleNo(availableDriver.getData().getVehicleNo());
+                    order.setVehicleType(availableDriver.getData().getVehicleType());
                     order.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
 
+
+                    order.setGmtModified(now);
+                    orderMapper.updateById(order);
                     break radius;
                 }
                 //查看车辆是否可以派单
