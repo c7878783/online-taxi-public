@@ -4,6 +4,7 @@ import com.dsa.internalcommon.constant.DriverCarConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.DriverUser;
 import com.dsa.internalcommon.responese.DriverUserExistsResponse;
+import com.dsa.internalcommon.responese.OrderDriverResponse;
 import com.dsa.servicedriveruser.service.DriverUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,4 +47,10 @@ public class UserController {
 
         return ResponseResult.success(response);
     }
+
+    @GetMapping("/get-available-driver/{carId}")
+    public ResponseResult<OrderDriverResponse> getAvailableDriver(@PathVariable("carId") Long carId){
+        return driverUserService.getAvailableDriver(carId);
+    }
+
 }

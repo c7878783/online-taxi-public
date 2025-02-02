@@ -1,7 +1,9 @@
 package com.dsa.internalcommon.constant;
 
 public class DriverCarConstants {
-
+    /**
+     * 司机车辆绑定关系 1 绑定 2 解绑
+     */
     public final static int DRIVER_CAR_BIND = 1;
     public final static int DRIVER_CAR_UNBIND = 2;
     /**

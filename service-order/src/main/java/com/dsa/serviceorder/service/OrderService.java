@@ -5,8 +5,8 @@ import com.dsa.internalcommon.constant.CommonStatusEnum;
 import com.dsa.internalcommon.constant.OrderConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.Order;
-import com.dsa.internalcommon.pojo.PriceRule;
 import com.dsa.internalcommon.request.OrderRequest;
+import com.dsa.internalcommon.responese.OrderDriverResponse;
 import com.dsa.internalcommon.responese.TerminalResponse;
 import com.dsa.internalcommon.util.RedisPrefixUtils;
 import com.dsa.serviceorder.mapper.OrderMapper;
@@ -14,11 +14,9 @@ import com.dsa.serviceorder.remote.ServiceClient;
 import com.dsa.serviceorder.remote.ServiceDriverUserClient;
 import com.dsa.serviceorder.remote.ServiceMapClient;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONObject;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -56,7 +54,7 @@ public class OrderService {
         LocalDateTime now = LocalDateTime.now();
         //下单的城市和车型是否支持业务
         if (!ifPriceRuleExists(orderRequest.getFareType())){
-            return ResponseResult.fail(CommonStatusEnum.CITY_NOT_SETVICE.getCode(), CommonStatusEnum.CITY_NOT_SETVICE.getValue());
+            return ResponseResult.fail(CommonStatusEnum.CITY_NOT_SERVICE.getCode(), CommonStatusEnum.CITY_NOT_SERVICE.getValue());
         }
         //下单的城市是否有司机
         if (!serviceDriverUserClient.isAvailableDriver(orderRequest.getAddress()).getData()){
@@ -66,8 +64,8 @@ public class OrderService {
         if (isBlackDevice(orderRequest.getDeviceCode())){
             return ResponseResult.fail(CommonStatusEnum.DEVICE_IS_BLACK.getCode(), CommonStatusEnum.DEVICE_IS_BLACK.getValue());
         }
-        //判断是否有正在进行中的订单
-        Long validOrderNum = ifOrderGoingOn(orderRequest.getPassengerId());
+        //判断乘客是否有正在进行中的订单
+        Long validOrderNum = ifPassengerOrderGoingOn(orderRequest.getPassengerId());
         if (validOrderNum > 0){
             return ResponseResult.fail(CommonStatusEnum.ORDER_EXISTS.getCode(), CommonStatusEnum.ORDER_EXISTS.getValue());
         }
@@ -86,7 +84,7 @@ public class OrderService {
         order.setGmtModified(now);
 
         orderMapper.insert(order);
-        //实时寻找附近司机
+        //实时寻找附近司机,附近存在司机才可继续
         dispatchRealTimeOrder(order);
         return ResponseResult.success("");
     }
@@ -99,7 +97,12 @@ public class OrderService {
         return booleanResponseResult.getData();
     }
 
-    private Long ifOrderGoingOn(Long passengerId){
+    /**
+     * 乘客订单是否在进行，即订单状态1-7
+     * @param passengerId
+     * @return
+     */
+    private Long ifPassengerOrderGoingOn(Long passengerId){
         //判断有正在进行的订单（订单状态1~7）不允许下单
         QueryWrapper<Order> queryWrapper = new QueryWrapper();
         queryWrapper.eq("passenger_id", passengerId);
@@ -112,6 +115,24 @@ public class OrderService {
                 .or().eq("order_status", OrderConstants.TO_START_PAY));
 
         Long validOrderNum = orderMapper.selectCount(queryWrapper);
+        return validOrderNum;
+    }
+
+    /**
+     * 司机订单是否在进行，即订单状态2-5
+     * @param driverId
+     * @return
+     */
+    private Long ifDriverOrderGoingOn(Long driverId){
+        QueryWrapper<Order> queryWrapper = new QueryWrapper();
+        queryWrapper.eq("driver_id", driverId);
+        queryWrapper.and(wrapper -> wrapper.eq("order_status", OrderConstants.DRIVER_RECEIVE_ORDER)
+                .or().eq("order_status", OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
+                .or().eq("order_status", OrderConstants.DRIVER_ARRIVED_DEPARTURE)
+                .or().eq("order_status", OrderConstants.PICK_UP_PASSENGER));//下一个状态是到达目的地乘客下车，从这里开始就可以再接单了
+
+        Long validOrderNum = orderMapper.selectCount(queryWrapper);
+        log.info("司机"+driverId+"正在进行的订单数量:"+validOrderNum);
         return validOrderNum;
     }
 
@@ -146,13 +167,31 @@ public class OrderService {
         radiusList.add(5000);
         ResponseResult<List<TerminalResponse>> listResponseResult = null;
         String center = depLatitude + "," + depLongitude;
+        radius://goto语法
         for (int i = 0; i < radiusList.size(); i++) {
             listResponseResult = serviceMapClient.aroundSearch(center, radiusList.get(i));
 
             log.info("寻找车辆半径：" + radiusList.get(i));
+            List<TerminalResponse> data = listResponseResult.getData();
+            for (int j = 0; j < data.size(); j++) {
+                Long carId = data.get(j).getCarId();
+                log.info("找到车辆："+carId);
+                //查询车辆信息
+                ResponseResult<OrderDriverResponse> availableDriver = serviceDriverUserClient.getAvailableDriver(carId);
+                if (availableDriver.getCode() == CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode()){
+                    continue radius;//跳到radius
+                }else {
+                    log.info("找到了正在出车的司机："+carId);
+                    //判断司机是否有正在进行中的订单
+                    Long validOrderNum = ifDriverOrderGoingOn(availableDriver.getData().getDriverId());
+                    if (validOrderNum > 0){
+                        continue ;//继续找车
+                    }
+                    break radius;
+                }
+                //查看车辆是否可以派单
 
-            if (!listResponseResult.getData().isEmpty()){
-
+                //派单成功，退出循环
             }
         }
 

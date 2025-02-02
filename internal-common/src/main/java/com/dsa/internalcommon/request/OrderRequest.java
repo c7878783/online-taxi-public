@@ -26,7 +26,7 @@ public class OrderRequest {
     private String destLatitude;
     //坐标加密表示:1:gcj-02,2:wgs84,3:bd-09,4:cgcs2000北斗,0:其他
     private Integer encrypt;
-    private String fareType;//设定为城市address、车型vehicleType、版本号fareVersion三合一相加字符串
+    private String fareType;//设定为城市address、车型vehicleType、二合一相加字符串
 
     private Integer fareVersion;
     //请求设备唯一码

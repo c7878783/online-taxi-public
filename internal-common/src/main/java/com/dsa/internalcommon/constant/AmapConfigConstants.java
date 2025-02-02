@@ -1,7 +1,9 @@
 package com.dsa.internalcommon.constant;
 
 public class AmapConfigConstants {
-
+    /**
+     * 调用高德地图url
+     */
     public static final String DIRECTIONURL=
             "https://restapi.amap.com/v3/direction/driving";
 
