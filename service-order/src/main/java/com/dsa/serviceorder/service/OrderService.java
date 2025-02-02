@@ -86,7 +86,7 @@ public class OrderService {
         order.setGmtModified(now);
         orderMapper.insert(order);
         //实时寻找附近司机,附近存在司机才可继续
-        dispatchRealTimeOrder(order);
+//        dispatchRealTimeOrder(order);
         return ResponseResult.success("");
     }
 
@@ -156,7 +156,7 @@ public class OrderService {
         return false;
     }
     //实时订单派单逻辑
-    private void dispatchRealTimeOrder(Order order){
+    public void dispatchRealTimeOrder(Order order){
         //两公里
         String depLongitude = order.getDepLongitude();
         String depLatitude = order.getDepLatitude();
@@ -213,13 +213,11 @@ public class OrderService {
                     order.setVehicleType(availableDriver.getData().getVehicleType());
                     order.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
 
-
                     order.setGmtModified(now);
                     orderMapper.updateById(order);
                     break radius;
                 }
                 //查看车辆是否可以派单
-
                 //派单成功，退出循环
             }
         }
