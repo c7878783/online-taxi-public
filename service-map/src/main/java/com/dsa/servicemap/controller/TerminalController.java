@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/terminal")
 public class TerminalController {
@@ -20,8 +22,8 @@ public class TerminalController {
         return terminalService.add(name,desc);
     }
 
-    @PostMapping("/aroundsearch")
-    public ResponseResult<TerminalResponse> aroundSearch(String center, Integer radius){
+    @PostMapping("/aroundsearch")//POST 请求的 表单参数，Spring 会自动解析，所以可以省略 @RequestParam
+    public ResponseResult<List<TerminalResponse>> aroundSearch(String center, Integer radius){
 
         return terminalService.aroundSearch(center, radius);
     }

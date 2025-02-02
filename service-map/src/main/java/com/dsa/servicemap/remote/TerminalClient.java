@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -60,7 +61,7 @@ public class TerminalClient {
         return ResponseResult.success(terminalResponse);
     }
 
-    public ResponseResult<TerminalResponse> aroundSearch(String center, Integer radius){
+    public ResponseResult<List<TerminalResponse>> aroundSearch(String center, Integer radius){
         StringBuilder url = new StringBuilder();
         url.append(AmapConfigConstants.TERMINAL_AROUND_SEARCH)
                 .append("?")

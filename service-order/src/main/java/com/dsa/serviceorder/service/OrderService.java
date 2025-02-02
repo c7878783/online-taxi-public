@@ -7,10 +7,14 @@ import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.Order;
 import com.dsa.internalcommon.pojo.PriceRule;
 import com.dsa.internalcommon.request.OrderRequest;
+import com.dsa.internalcommon.responese.TerminalResponse;
 import com.dsa.internalcommon.util.RedisPrefixUtils;
 import com.dsa.serviceorder.mapper.OrderMapper;
 import com.dsa.serviceorder.remote.ServiceClient;
 import com.dsa.serviceorder.remote.ServiceDriverUserClient;
+import com.dsa.serviceorder.remote.ServiceMapClient;
+import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +24,12 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class OrderService {
 
     @Autowired
@@ -42,6 +49,8 @@ public class OrderService {
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
+    @Autowired
+    private ServiceMapClient serviceMapClient;
 
     public ResponseResult add(OrderRequest orderRequest){
         LocalDateTime now = LocalDateTime.now();
@@ -77,6 +86,8 @@ public class OrderService {
         order.setGmtModified(now);
 
         orderMapper.insert(order);
+        //实时寻找附近司机
+        dispatchRealTimeOrder(order);
         return ResponseResult.success("");
     }
 
@@ -121,4 +132,31 @@ public class OrderService {
             stringRedisTemplate.opsForValue().setIfAbsent(deviceCodeKey, "1", 1L, TimeUnit.MINUTES);
         }
         return false;
-    }}
+    }
+    //实时订单派单逻辑
+    private void dispatchRealTimeOrder(Order order){
+        //两公里
+        String depLongitude = order.getDepLongitude();
+        String depLatitude = order.getDepLatitude();
+
+        //定义搜索半径列表
+        ArrayList<Integer> radiusList = new ArrayList<>();
+        radiusList.add(2000);
+        radiusList.add(4000);
+        radiusList.add(5000);
+        ResponseResult<List<TerminalResponse>> listResponseResult = null;
+        String center = depLatitude + "," + depLongitude;
+        for (int i = 0; i < radiusList.size(); i++) {
+            listResponseResult = serviceMapClient.aroundSearch(center, radiusList.get(i));
+
+            log.info("寻找车辆半径：" + radiusList.get(i));
+
+            if (!listResponseResult.getData().isEmpty()){
+
+            }
+        }
+
+
+    }
+
+}
