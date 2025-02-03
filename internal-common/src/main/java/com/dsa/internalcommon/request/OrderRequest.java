@@ -34,9 +34,20 @@ public class OrderRequest {
     private Integer fareVersion;
     //请求设备唯一码
     private String deviceCode;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime toPickUpPassengerTime; // 司机去接乘客出发时间
     private String toPickUpPassengerLongitude; // 去接乘客时，司机的经度
     private String toPickUpPassengerLatitude; // 去接乘客时，司机的纬度
     private String toPickUpPassengerAddress; // 去接乘客时，司机的地点
+
+    private LocalDateTime pickUpPassengerTime; // 接到乘客，乘客上车时间
+    private String pickUpPassengerLongitude; // 接到乘客，乘客上车经度
+    private String pickUpPassengerLatitude; // 接到乘客，乘客上车纬度
+
+    private LocalDateTime passengerGetoffTime; // 乘客下车时间
+    private String passengerGetoffLongitude; // 乘客下车经度
+    private String passengerGetoffLatitude; // 乘客下车纬度
+    private Long driveMile; // 载客里程（米）
+    private Long driveTime; // 载客时间（分）
 }

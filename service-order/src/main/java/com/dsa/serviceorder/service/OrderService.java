@@ -341,7 +341,7 @@ public class OrderService {
         order.setOrderStatus(OrderConstants.DRIVER_TO_PICK_UP_PASSENGER);
 
         orderMapper.updateById(order);
-        return ResponseResult.success("成功");
+        return ResponseResult.success("出发去接乘客");
     }
 
     /**
@@ -359,6 +359,43 @@ public class OrderService {
 
         order.setDriverArrivedDepartureTime(LocalDateTime.now());
         orderMapper.updateById(order);
-        return ResponseResult.success();
+        return ResponseResult.success("司机抵达上车点");
+    }
+
+    /**
+     * 乘客上车，行程开始
+     * @param orderRequest
+     * @return
+     */
+    public ResponseResult pickUp(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        QueryWrapper<Order> QW = new QueryWrapper<>();
+        QW.eq("id", orderId);
+        Order order = orderMapper.selectOne(QW);
+        order.setOrderStatus(OrderConstants.PICK_UP_PASSENGER);
+        order.setPickUpPassengerLongitude(orderRequest.getPickUpPassengerLongitude());
+        order.setPickUpPassengerLatitude(orderRequest.getPickUpPassengerLatitude());
+        order.setPickUpPassengerTime(LocalDateTime.now());
+
+        orderMapper.updateById(order);
+        return ResponseResult.success("已接到乘客，形成开始");
+    }
+
+    /**
+     * 到达目的地
+     * @param orderRequest
+     * @return
+     */
+    public ResponseResult passengerGetoff(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        QueryWrapper<Order> QW = new QueryWrapper<>();
+        QW.eq("id", orderId);
+        Order order = orderMapper.selectOne(QW);
+        order.setOrderStatus(OrderConstants.PASSENGER_GETOFF);
+        order.setPassengerGetoffTime(LocalDateTime.now());
+        order.setPassengerGetoffLongitude(orderRequest.getPassengerGetoffLongitude());
+        order.setPassengerGetoffLatitude(orderRequest.getPassengerGetoffLatitude());
+        orderMapper.updateById(order);
+        return ResponseResult.success("到达目的地");
     }
 }
