@@ -15,6 +15,8 @@ import com.dsa.serviceorder.remote.ServiceDriverUserClient;
 import com.dsa.serviceorder.remote.ServiceMapClient;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -43,12 +45,15 @@ public class OrderService {
     StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    private SqlSessionTemplate sqlSessionTemplate;
+    private ServiceMapClient serviceMapClient;
 
     @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-    @Autowired
-    private ServiceMapClient serviceMapClient;
+    RedissonClient redissonClient;
+//    @Autowired
+//    private SqlSessionTemplate sqlSessionTemplate;
+//
+//    @Autowired
+//    private RedisTemplate<Object, Object> redisTemplate;
 
     public ResponseResult add(OrderRequest orderRequest){
         LocalDateTime now = LocalDateTime.now();
@@ -88,6 +93,85 @@ public class OrderService {
         //实时寻找附近司机,附近存在司机才可继续
 //        dispatchRealTimeOrder(order);
         return ResponseResult.success("");
+    }
+    //实时订单派单逻辑
+    //这里加synchronized只是jvm级别的，当启动两个相同的微服务时，锁会失效，所以我们使用redis
+//    public synchronized void dispatchRealTimeOrder(Order order){
+    public void dispatchRealTimeOrder(Order order){
+        //两公里
+        String depLongitude = order.getDepLongitude();
+        String depLatitude = order.getDepLatitude();
+
+        //定义搜索半径列表
+        ArrayList<Integer> radiusList = new ArrayList<>();
+        radiusList.add(2000);
+        radiusList.add(4000);
+        radiusList.add(5000);
+        ResponseResult<List<TerminalResponse>> listResponseResult = null;
+        String center = depLatitude + "," + depLongitude;
+        radius://goto语法
+        for (int i = 0; i < radiusList.size(); i++) {
+            listResponseResult = serviceMapClient.aroundSearch(center, radiusList.get(i));
+
+            log.info("寻找车辆半径：" + radiusList.get(i));
+            List<TerminalResponse> data = listResponseResult.getData();
+            for (int j = 0; j < data.size(); j++) {
+                TerminalResponse terminalResponse = data.get(j);
+                Long carId = terminalResponse.getCarId();
+                String longitude = terminalResponse.getLongitude();
+                String latitude = terminalResponse.getLatitude();
+
+                log.info("找到车辆："+carId);
+                //查询车辆信息
+                ResponseResult<OrderDriverResponse> availableDriver = serviceDriverUserClient.getAvailableDriver(carId);
+                if (availableDriver.getCode() == CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode()){
+                    continue radius;//跳到radius
+                }else {
+                    log.info("找到了正在出车的司机："+carId);
+                    //判断司机是否有正在进行中的订单
+                    //这个部分在高并发下会产生问题，很可能刚查出来司机没有订单，但是同时别人就把这个司机抢走了
+                    String lockKey = (availableDriver.getData().getDriverId() + "").intern();
+                    RLock lock = redissonClient.getLock(lockKey);
+                    lock.lock();
+                    Long validOrderNum = ifDriverOrderGoingOn(availableDriver.getData().getDriverId());
+                    if (validOrderNum > 0){
+                        lock.unlock();//不加这行，直接跳走导致死锁
+                        continue ;//继续找车
+                    }
+                    //订单直接匹配司机
+                    //查询当前车辆信息
+                    QueryWrapper<Object> carQW = new QueryWrapper<>();
+                    carQW.eq("id", carId);
+
+                    //查询当前司机信息
+                    order.setDriverId(availableDriver.getData().getDriverId());
+                    order.setDriverPhone(availableDriver.getData().getDriverPhone());
+                    order.setCarId(availableDriver.getData().getCarId());
+                    //当前时间
+                    LocalDateTime now = LocalDateTime.now();
+                    order.setReceiveOrderTime(now);
+                    //地图中来
+                    order.setReceiveOrderCarLongitude(longitude);
+                    order.setReceiveOrderCarLatitude(latitude);
+                    //从司机和车辆来
+                    order.setLicenseId(availableDriver.getData().getLicenseId());
+                    order.setVehicleNo(availableDriver.getData().getVehicleNo());
+                    order.setVehicleType(availableDriver.getData().getVehicleType());
+                    order.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
+
+                    order.setGmtModified(now);
+                    orderMapper.updateById(order);
+
+                    lock.unlock();
+
+                    break radius;
+                }
+                //查看车辆是否可以派单
+                //派单成功，退出循环
+            }
+        }
+
+
     }
 
     private boolean ifPriceRuleExists(String fareType){
@@ -154,76 +238,6 @@ public class OrderService {
             stringRedisTemplate.opsForValue().setIfAbsent(deviceCodeKey, "1", 1L, TimeUnit.MINUTES);
         }
         return false;
-    }
-    //实时订单派单逻辑
-    //这里加synchronized只是jvm级别的，当启动两个相同的微服务时，锁会失效
-    public synchronized void dispatchRealTimeOrder(Order order){
-        //两公里
-        String depLongitude = order.getDepLongitude();
-        String depLatitude = order.getDepLatitude();
-
-        //定义搜索半径列表
-        ArrayList<Integer> radiusList = new ArrayList<>();
-        radiusList.add(2000);
-        radiusList.add(4000);
-        radiusList.add(5000);
-        ResponseResult<List<TerminalResponse>> listResponseResult = null;
-        String center = depLatitude + "," + depLongitude;
-        radius://goto语法
-        for (int i = 0; i < radiusList.size(); i++) {
-            listResponseResult = serviceMapClient.aroundSearch(center, radiusList.get(i));
-
-            log.info("寻找车辆半径：" + radiusList.get(i));
-            List<TerminalResponse> data = listResponseResult.getData();
-            for (int j = 0; j < data.size(); j++) {
-                TerminalResponse terminalResponse = data.get(j);
-                Long carId = terminalResponse.getCarId();
-                String longitude = terminalResponse.getLongitude();
-                String latitude = terminalResponse.getLatitude();
-
-                log.info("找到车辆："+carId);
-                //查询车辆信息
-                ResponseResult<OrderDriverResponse> availableDriver = serviceDriverUserClient.getAvailableDriver(carId);
-                if (availableDriver.getCode() == CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode()){
-                    continue radius;//跳到radius
-                }else {
-                    log.info("找到了正在出车的司机："+carId);
-                    //判断司机是否有正在进行中的订单
-                    Long validOrderNum = ifDriverOrderGoingOn(availableDriver.getData().getDriverId());
-                    if (validOrderNum > 0){
-                        continue ;//继续找车
-                    }
-                    //订单直接匹配司机
-                    //查询当前车辆信息
-                    QueryWrapper<Object> carQW = new QueryWrapper<>();
-                    carQW.eq("id", carId);
-
-                    //查询当前司机信息
-                    order.setDriverId(availableDriver.getData().getDriverId());
-                    order.setDriverPhone(availableDriver.getData().getDriverPhone());
-                    order.setCarId(availableDriver.getData().getCarId());
-                    //当前时间
-                    LocalDateTime now = LocalDateTime.now();
-                    order.setReceiveOrderTime(now);
-                    //地图中来
-                    order.setReceiveOrderCarLongitude(longitude);
-                    order.setReceiveOrderCarLatitude(latitude);
-                    //从司机和车辆来
-                    order.setLicenseId(availableDriver.getData().getLicenseId());
-                    order.setVehicleNo(availableDriver.getData().getVehicleNo());
-                    order.setVehicleType(availableDriver.getData().getVehicleType());
-                    order.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
-
-                    order.setGmtModified(now);
-                    orderMapper.updateById(order);
-                    break radius;
-                }
-                //查看车辆是否可以派单
-                //派单成功，退出循环
-            }
-        }
-
-
     }
 
 }
