@@ -13,13 +13,13 @@ public class Car {
     private long id;//主键
     private String address;
     private String vehicleNo;
-    private String plateColor;
+    private String plateColor;//车牌颜色
     private Integer seats;
     private String brand;
     private String model;
     private String vehicleType;
     private String ownerName;
-    private String vehicleColor;
+    private String vehicleColor;//车身颜色
     private String engineId;
     private String vin;
     private LocalDate certifyDateA;

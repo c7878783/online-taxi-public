@@ -1,5 +1,7 @@
 package com.dsa.internalcommon.request;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -7,7 +9,8 @@ import java.time.LocalDateTime;
 
 @Data
 public class OrderRequest {
-
+    @TableId(type = IdType.AUTO)//这个注解确保主键id在mapper调用insert方法后可以被回填
+    private Long orderId;
     //乘客Id
     private Long passengerId;
     //乘客手机号
@@ -31,4 +34,9 @@ public class OrderRequest {
     private Integer fareVersion;
     //请求设备唯一码
     private String deviceCode;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime toPickUpPassengerTime; // 司机去接乘客出发时间
+    private String toPickUpPassengerLongitude; // 去接乘客时，司机的经度
+    private String toPickUpPassengerLatitude; // 去接乘客时，司机的纬度
+    private String toPickUpPassengerAddress; // 去接乘客时，司机的地点
 }

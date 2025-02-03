@@ -5,6 +5,7 @@ import com.dsa.internalcommon.constant.CommonStatusEnum;
 import com.dsa.internalcommon.constant.IdentityConstants;
 import com.dsa.internalcommon.constant.OrderConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.pojo.Car;
 import com.dsa.internalcommon.pojo.Order;
 import com.dsa.internalcommon.request.OrderRequest;
 import com.dsa.internalcommon.responese.OrderDriverResponse;
@@ -55,12 +56,19 @@ public class OrderService {
 
     @Autowired
     RedissonClient redissonClient;
+
+
 //    @Autowired
 //    private SqlSessionTemplate sqlSessionTemplate;
 //
 //    @Autowired
 //    private RedisTemplate<Object, Object> redisTemplate;
 
+    /**
+     * 由乘客发起新建订单
+     * @param orderRequest
+     * @return
+     */
     public ResponseResult add(OrderRequest orderRequest){
         LocalDateTime now = LocalDateTime.now();
         //下单的城市和车型是否支持业务
@@ -97,13 +105,32 @@ public class OrderService {
         order.setGmtModified(now);
         orderMapper.insert(order);
         //实时寻找附近司机,附近存在司机才可继续
-//        dispatchRealTimeOrder(order);
+        for (int i = 0; i < 6; i++) {
+            int result = dispatchRealTimeOrder(order);
+            if (result == 1){
+                //派单成功
+                break;
+            }
+            try {
+                //等待20s
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return ResponseResult.success("");
     }
-    //实时订单派单逻辑
+
+    /**
+     * 实时订单派单逻辑
+     * @param order
+     * @return
+     */
     //这里加synchronized只是jvm级别的，当启动两个相同的微服务时，锁会失效，所以我们使用redis
 //    public synchronized void dispatchRealTimeOrder(Order order){
-    public void dispatchRealTimeOrder(Order order){
+    public int dispatchRealTimeOrder(Order order){
+        log.info("循环一次");
+        int result = 0;
         //两公里
         String depLongitude = order.getDepLongitude();
         String depLatitude = order.getDepLatitude();
@@ -184,6 +211,28 @@ public class OrderService {
 
                     serviceSsePushClient.push(driverId, IdentityConstants.DRIVER_IDENTITY, driverContent.toString());
 
+                    //通知乘客
+                    JSONObject passengerContent = new JSONObject();
+                    passengerContent.put("driverId", order.getDriverId());
+                    passengerContent.put("driverPhone", order.getDriverPhone());
+                    //车辆信息
+                    passengerContent.put("vehicleNo", order.getVehicleNo());
+                    passengerContent.put("vehicleType", order.getVehicleType());
+                    passengerContent.put("receiveOrderCarLongitude", order.getReceiveOrderCarLongitude());
+                    passengerContent.put("receiveOrderCarLatitude", order.getReceiveOrderCarLatitude());
+                    //车辆信息，需要查表的
+                    ResponseResult<Car> carById = serviceDriverUserClient.getCarById(order.getCarId());
+                    Car carByIdData = carById.getData();
+                    String brand = carByIdData.getBrand();
+                    String model = carByIdData.getModel();
+                    String vehicleColor = carByIdData.getVehicleColor();
+                    passengerContent.put("brand", brand);
+                    passengerContent.put("model", model);
+                    passengerContent.put("vehicleColor", vehicleColor);
+                    serviceSsePushClient.push(order.getPassengerId(), IdentityConstants.PASSENGER_IDENTITY, passengerContent.toString());
+
+                    result = 1;
+
                     lock.unlock();
 
                     break radius;
@@ -192,10 +241,14 @@ public class OrderService {
                 //派单成功，退出循环
             }
         }
-
-
+    return result;
     }
 
+    /**
+     * 查看对应城市是否有计价规则
+     * @param fareType
+     * @return
+     */
     private boolean ifPriceRuleExists(String fareType){
         int $ = fareType.indexOf("$");
         String cityCode = fareType.substring(0, $);
@@ -243,7 +296,11 @@ public class OrderService {
         return validOrderNum;
     }
 
-
+    /**
+     * 查看是否是黑名单
+     * @param deviceCode
+     * @return
+     */
     private boolean isBlackDevice(String deviceCode){
         String deviceCodeKey = RedisPrefixUtils.blackDeviceCodePrefix + deviceCode;
         Boolean b = stringRedisTemplate.hasKey(deviceCodeKey);
@@ -262,4 +319,46 @@ public class OrderService {
         return false;
     }
 
+    /**
+     * 司机去接乘客时上传位置和时间
+     * @param orderRequest
+     * @return
+     */
+    public ResponseResult toPickUp(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        LocalDateTime toPickUpPassengerTime = orderRequest.getToPickUpPassengerTime();
+        String toPickUpPassengerLongitude = orderRequest.getToPickUpPassengerLongitude();
+        String toPickUpPassengerLatitude = orderRequest.getToPickUpPassengerLatitude();
+        String toPickUpPassengerAddress = orderRequest.getToPickUpPassengerAddress();
+        QueryWrapper<Order> QW = new QueryWrapper<>();
+        QW.eq("id", orderId);
+        Order order = orderMapper.selectOne(QW);
+
+        order.setToPickUpPassengerTime(toPickUpPassengerTime);
+        order.setToPickUpPassengerLongitude(toPickUpPassengerLongitude);
+        order.setToPickUpPassengerLatitude(toPickUpPassengerLatitude);
+        order.setToPickUpPassengerAddress(toPickUpPassengerAddress);
+        order.setOrderStatus(OrderConstants.DRIVER_TO_PICK_UP_PASSENGER);
+
+        orderMapper.updateById(order);
+        return ResponseResult.success("成功");
+    }
+
+    /**
+     * 司机抵达上车点
+     * @param orderRequest
+     * @return
+     */
+    public ResponseResult arrivedDeparture(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        QueryWrapper<Order> QW = new QueryWrapper<>();
+        QW.eq("id", orderId);
+
+        Order order = orderMapper.selectOne(QW);
+        order.setOrderStatus(OrderConstants.DRIVER_ARRIVED_DEPARTURE);
+
+        order.setDriverArrivedDepartureTime(LocalDateTime.now());
+        orderMapper.updateById(order);
+        return ResponseResult.success();
+    }
 }

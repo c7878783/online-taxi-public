@@ -19,7 +19,7 @@ public class CarController {
     }
 
     @GetMapping("/car")
-    public ResponseResult<Car> getCarById(Long carId){
+    public ResponseResult<Car> getCarById(@RequestParam Long carId){
 
         return carService.getCarById(carId);
     }
