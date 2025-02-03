@@ -156,7 +156,8 @@ public class OrderService {
         return false;
     }
     //实时订单派单逻辑
-    public void dispatchRealTimeOrder(Order order){
+    //这里加synchronized只是jvm级别的，当启动两个相同的微服务时，锁会失效
+    public synchronized void dispatchRealTimeOrder(Order order){
         //两公里
         String depLongitude = order.getDepLongitude();
         String depLatitude = order.getDepLatitude();
