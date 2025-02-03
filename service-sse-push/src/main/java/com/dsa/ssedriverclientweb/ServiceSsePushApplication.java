@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class SseDriverClientWebApplication {
+public class ServiceSsePushApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SseDriverClientWebApplication.class, args);
+        SpringApplication.run(ServiceSsePushApplication.class, args);
     }
 
 }
