@@ -1,4 +1,4 @@
 连接服务
 http://localhost:9000/service-sse-push.html
 发送消息
-http://localhost:9000/push?userId=1&identity=1&content=测试专用
+http://localhost:9000/push?userId=1885979129708015617&identity=2&content=%E6%B5%8B%E8%AF%95%E4%B8%93%E7%94%A8

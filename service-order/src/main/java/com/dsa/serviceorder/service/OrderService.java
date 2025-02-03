@@ -2,6 +2,7 @@ package com.dsa.serviceorder.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dsa.internalcommon.constant.CommonStatusEnum;
+import com.dsa.internalcommon.constant.IdentityConstants;
 import com.dsa.internalcommon.constant.OrderConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.Order;
@@ -13,7 +14,9 @@ import com.dsa.serviceorder.mapper.OrderMapper;
 import com.dsa.serviceorder.remote.ServiceClient;
 import com.dsa.serviceorder.remote.ServiceDriverUserClient;
 import com.dsa.serviceorder.remote.ServiceMapClient;
+import com.dsa.serviceorder.remote.ServiceSsePushClient;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -46,6 +49,9 @@ public class OrderService {
 
     @Autowired
     private ServiceMapClient serviceMapClient;
+
+    @Autowired
+    private ServiceSsePushClient serviceSsePushClient;
 
     @Autowired
     RedissonClient redissonClient;
@@ -130,10 +136,11 @@ public class OrderService {
                     log.info("找到了正在出车的司机："+carId);
                     //判断司机是否有正在进行中的订单
                     //这个部分在高并发下会产生问题，很可能刚查出来司机没有订单，但是同时别人就把这个司机抢走了
-                    String lockKey = (availableDriver.getData().getDriverId() + "").intern();
+                    Long driverId = availableDriver.getData().getDriverId();
+                    String lockKey = (driverId + "").intern();
                     RLock lock = redissonClient.getLock(lockKey);
                     lock.lock();
-                    Long validOrderNum = ifDriverOrderGoingOn(availableDriver.getData().getDriverId());
+                    Long validOrderNum = ifDriverOrderGoingOn(driverId);
                     if (validOrderNum > 0){
                         lock.unlock();//不加这行，直接跳走导致死锁
                         continue ;//继续找车
@@ -144,7 +151,7 @@ public class OrderService {
                     carQW.eq("id", carId);
 
                     //查询当前司机信息
-                    order.setDriverId(availableDriver.getData().getDriverId());
+                    order.setDriverId(driverId);
                     order.setDriverPhone(availableDriver.getData().getDriverPhone());
                     order.setCarId(availableDriver.getData().getCarId());
                     //当前时间
@@ -161,6 +168,21 @@ public class OrderService {
 
                     order.setGmtModified(now);
                     orderMapper.updateById(order);
+
+                    //通知司机
+                    JSONObject driverContent = new JSONObject();
+                    driverContent.put("passengerId", order.getPassengerId());
+                    driverContent.put("passengerPhone", order.getPassengerPhone());
+
+                    driverContent.put("depature", order.getDeparture());
+                    driverContent.put("depLongitude", order.getDepLongitude());
+                    driverContent.put("depLatitude", order.getDepLatitude());
+
+                    driverContent.put("destination", order.getDestination());
+                    driverContent.put("destLongitude", order.getDestLongitude());
+                    driverContent.put("destLatitude", order.getDestLatitude());
+
+                    serviceSsePushClient.push(driverId, IdentityConstants.DRIVER_IDENTITY, driverContent.toString());
 
                     lock.unlock();
 

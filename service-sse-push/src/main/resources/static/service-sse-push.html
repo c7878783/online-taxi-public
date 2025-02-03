@@ -11,34 +11,42 @@
 <div id="message">展示消息</div>
 <button onclick="sourceClose()">关闭连接</button>
 <script>
-    userId=1
-    identity=1
-    source = null;
-    if (window.EventSource){
-        console.info("此浏览器支持sse");
-        source = new EventSource("http://localhost:9000/connect?userId=" + userId +"&identity=" + identity);
-        source.addEventListener("message", function (e){
-            content = e.data;
-            console.info("消息内容:" + content);
+    const userId = "1885979129708015617";  // 注意保持引号
+    const identity = 2;
+
+    if (window.EventSource) {
+        console.info("此浏览器支持 SSE");
+        const source = new EventSource(`http://localhost:9000/connect?userId=${userId}&identity=${identity}`);
+
+        source.addEventListener("message", function (e) {
+            const content = e.data;
+            console.info("消息内容: " + content);
             setMessageContent(content);
-        })
-    }else {
-        console.log("浏览器不支持sse")
+        });
+    } else {
+        console.log("浏览器不支持 SSE");
     }
+
 
     function setMessageContent(content){
         document.getElementById("message").innerHTML+=(content+'</br>');
     }
 
-    function sourceClose(){
-        console.info("close方法执行")
-        //客户端source的关闭
-        source.close();
-        //服务端map的移除
-        httpRequest = new XMLHttpRequest();
-        httpRequest.open("get", "http://localhost:9000/close?userId=" + userId +"&identity=" + identity);
-        httpRequest.send()
+    function sourceClose() {
+        console.info("close方法执行");
+
+        // 客户端关闭 SSE 连接
+        if (source) {
+            source.close();
+        }
+
+        // 服务端移除对应的连接，确保 userId 以字符串形式传递
+        const httpRequest = new XMLHttpRequest();
+        const url = `http://localhost:9000/close?userId=${userId}&identity=${identity}`;
+        httpRequest.open("GET", url);
+        httpRequest.send();
     }
+
 </script>
 </body>
 </html>

@@ -25,11 +25,14 @@ public class SseController {
      * @return
      */
     @GetMapping("/connect")
-    public SseEmitter connect(@RequestParam Long userId, @RequestParam String identity){
-        log.info("用户Id:"+userId+"|"+"用户身份："+identity);
+    public SseEmitter connect(@RequestParam String userId, @RequestParam String identity){
+
+        long longUserId = Long.parseLong(userId);
+
+        log.info("用户Id:"+longUserId+"|"+"用户身份："+identity);
 
         SseEmitter sseEmitter = new SseEmitter(0L);
-        String sseMapKey = SsePrefixUtils.generatorSseKey(userId, identity);
+        String sseMapKey = SsePrefixUtils.generatorSseKey(longUserId, identity);
 
         sseEmitterMap.put(sseMapKey, sseEmitter);
 
@@ -66,8 +69,11 @@ public class SseController {
      * @return
      */
     @GetMapping("/close")
-    public String close(@RequestParam Long userId, @RequestParam String identity){
-        String sseMapKey = SsePrefixUtils.generatorSseKey(userId, identity);
+    public String close(@RequestParam String userId, @RequestParam String identity){
+
+        long longUserId = Long.parseLong(userId);
+
+        String sseMapKey = SsePrefixUtils.generatorSseKey(longUserId, identity);
         System.out.println(sseMapKey + "关闭连接");
         if (sseEmitterMap.containsKey(sseMapKey)) {
             sseEmitterMap.remove(sseMapKey);
