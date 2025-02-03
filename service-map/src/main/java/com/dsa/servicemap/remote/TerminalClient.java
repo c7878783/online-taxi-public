@@ -3,6 +3,7 @@ package com.dsa.servicemap.remote;
 import com.dsa.internalcommon.constant.AmapConfigConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.responese.TerminalResponse;
+import com.dsa.internalcommon.responese.TrsearchResponse;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -95,27 +96,12 @@ public class TerminalClient {
             terminalResponse.setLongitude(longitude);
             terminalResponse.setLatitude(latitude);
             terminalResponseArrayList.add(terminalResponse);
-
         }
 //        {
 //            "errcode": 10000,
 //                "errmsg": "OK",
 //                "data": {
 //            "results": [
-//            {
-//                "tid": 1163817843,
-//                    "name": "京C22222",
-//                    "createtime": 1738246964679,
-//                    "locatetime": 1738292135930,
-//                    "location": {
-//                "latitude": 39.22,
-//                        "longitude": 116.44,
-//                        "speed": 255.0,
-//                        "direction": 511.0,
-//                        "accuracy": 550.0,
-//                        "distance": 0
-//            }
-//            },
 //            {
 //                "tid": 1163951505,
 //                    "name": "沪B89999",
@@ -132,11 +118,75 @@ public class TerminalClient {
 //            }
 //            }
 //        ],
-//            "count": 2
+//            "count": 1
 //        }
 //        }
-
         return ResponseResult.success(terminalResponseArrayList);
     }
 
+    public ResponseResult<TrsearchResponse> trsearch(String tid, Long starttime, Long endtime) {
+        StringBuilder url = new StringBuilder();
+        url.append(AmapConfigConstants.TERMINAL_TRACE_SEARCH)
+                .append("?")
+                .append("key="+amapKey)
+                .append("&")
+                .append("sid="+sid)
+                .append("&")
+                .append("tid="+tid)
+                .append("&")
+                .append("starttime="+starttime)
+                .append("&")
+                .append("endtime="+endtime)
+        ;
+        log.info(url.toString());
+        ResponseEntity<String> forEntity = restTemplate.postForEntity(url.toString(), null,String.class);
+        String body = forEntity.getBody();
+        JSONObject jsonObject = JSONObject.fromObject(body);
+        JSONObject data = jsonObject.getJSONObject("data");
+
+        int counts = data.getInt("counts");
+        if (counts == 0){
+            return ResponseResult.success(null);
+        }
+        JSONArray tracks = data.getJSONArray("tracks");
+        long driverMile = 0L;
+        long driverTime = 0L;
+        for (int i = 0; i <tracks.size(); i++) {
+            JSONObject track = tracks.getJSONObject(i);
+            long distanceMile = track.getLong("distance");
+            long timeMs = track.getLong("time");
+            long timeMin = timeMs / (1000 * 60);
+
+            driverMile = driverMile + distanceMile;
+            driverTime = driverTime + timeMin;
+        }
+        TrsearchResponse trsearchResponse = new TrsearchResponse();
+        trsearchResponse.setDistanceMile(driverMile);
+        trsearchResponse.setTimeMin(driverTime);
+//        {
+//            "errcode": 10000,
+//                "errmsg": "OK",
+//                "data": {
+//            "tracks": [
+//            {
+//                "startPoint": {
+//                "location": "114.555334,38.031267",
+//                        "locatetime": 1738589269389
+//            },
+//                "endPoint": {
+//                "location": "114.511826,38.043172",
+//                        "locatetime": 1738589427505
+//            },
+//                "trid": 340,
+//                    "distance": 5088,
+//                    "time": 158125,
+//                    "counts": 8,
+//                    "points": [
+//                这地方是一串points，节约空间省略了
+//        ],
+//            "counts": 1
+//        }
+//        }
+        return ResponseResult.success(trsearchResponse);
+    }
 }
