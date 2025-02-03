@@ -10,6 +10,7 @@ import com.dsa.internalcommon.pojo.Order;
 import com.dsa.internalcommon.request.OrderRequest;
 import com.dsa.internalcommon.responese.OrderDriverResponse;
 import com.dsa.internalcommon.responese.TerminalResponse;
+import com.dsa.internalcommon.responese.TrsearchResponse;
 import com.dsa.internalcommon.util.RedisPrefixUtils;
 import com.dsa.serviceorder.mapper.OrderMapper;
 import com.dsa.serviceorder.remote.ServiceClient;
@@ -28,6 +29,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -395,6 +397,15 @@ public class OrderService {
         order.setPassengerGetoffTime(LocalDateTime.now());
         order.setPassengerGetoffLongitude(orderRequest.getPassengerGetoffLongitude());
         order.setPassengerGetoffLatitude(orderRequest.getPassengerGetoffLatitude());
+        //上面是填写下车地点和时间，下面是形成距离和时长
+        ResponseResult<Car> carById = serviceDriverUserClient.getCarById(order.getCarId());
+        String tid = carById.getData().getTid();
+        long starttime = order.getPickUpPassengerTime().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        long endtime = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        ResponseResult<TrsearchResponse> trsearch = serviceMapClient.trsearch(tid, starttime, endtime);
+        order.setDriveMile(trsearch.getData().getDistanceMile());
+        order.setDriveTime(trsearch.getData().getTimeMin());
+
         orderMapper.updateById(order);
         return ResponseResult.success("到达目的地");
     }

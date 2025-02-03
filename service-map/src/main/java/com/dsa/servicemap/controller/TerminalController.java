@@ -36,5 +36,4 @@ public class TerminalController {
         return terminalService.trsearch(tid, starttime, endtime);
     }
 
-
 }
