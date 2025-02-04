@@ -76,13 +76,7 @@ public class ForecastPriceService {
         return ResponseResult.success(forecastPriceResponse);
     }
 
-    /**
-     * 根据距离、时长和计价规则，计算价格
-     * @param distance 距离
-     * @param duration 时长
-     * @param priceRule 计价规则
-     * @return 估算价格
-     */
+
 //    private Double gerPrice(Integer distance, Integer duration, PriceRule priceRule){
 //        BigDecimal price = new BigDecimal(0);
 //
@@ -119,6 +113,27 @@ public class ForecastPriceService {
 //        return price.doubleValue();
 //    }
 
+    public ResponseResult calculatePrice(Integer distance, Integer duration, String fareType){
+        QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("fare_type", fareType);
+        queryWrapper.orderByDesc("fare_version");
+        List<PriceRule> priceRules = priceRuleMapper.selectList(queryWrapper);
+        if (priceRules.size() == 0){
+            return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(), CommonStatusEnum.PRICE_RULE_EMPTY.getValue());
+        }
+        PriceRule priceRule = priceRules.get(0);
+        log.info(priceRule.toString());
+        log.info("根据距离时长和计价规则计算价格");
+        Double price = gerPrice(distance, duration, priceRule);
+        return ResponseResult.success(price);
+    }
+    /**
+     * 根据距离、时长和计价规则，计算价格
+     * @param distance 距离
+     * @param duration 时长
+     * @param priceRule 计价规则
+     * @return 估算价格
+     */
     private Double gerPrice(Integer distance, Integer duration, PriceRule priceRule){
         double price = 0;
         //起步价
@@ -139,7 +154,7 @@ public class ForecastPriceService {
 
         //时长费
         double unitPricePerMinute = priceRule.getUnitPricePerMinute();
-        double time = BigDecimalUtils.divide(duration, 60);
+        double time = BigDecimalUtils.divide(duration, 60);//由秒转换而来
         double timeFare = BigDecimalUtils.multiply(time, unitPricePerMinute);
 
         price = BigDecimalUtils.add(price, timeFare);
