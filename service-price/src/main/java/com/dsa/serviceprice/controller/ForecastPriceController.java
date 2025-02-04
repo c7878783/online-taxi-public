@@ -41,7 +41,7 @@ public class ForecastPriceController {
      * @return
      */
     @PostMapping("/calculate-price")
-    public ResponseResult calculatePrice(@RequestParam Integer distance, @RequestParam Integer duration, @RequestParam String fareType){
+    public ResponseResult<Double> calculatePrice(@RequestParam Integer distance, @RequestParam Integer duration, @RequestParam String fareType){
         return forecastPriceService.calculatePrice(distance, duration, fareType);
     }
 }

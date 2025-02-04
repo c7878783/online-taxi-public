@@ -13,24 +13,20 @@ import com.dsa.internalcommon.responese.TerminalResponse;
 import com.dsa.internalcommon.responese.TrsearchResponse;
 import com.dsa.internalcommon.util.RedisPrefixUtils;
 import com.dsa.serviceorder.mapper.OrderMapper;
-import com.dsa.serviceorder.remote.ServiceClient;
-import com.dsa.serviceorder.remote.ServiceDriverUserClient;
-import com.dsa.serviceorder.remote.ServiceMapClient;
-import com.dsa.serviceorder.remote.ServiceSsePushClient;
+import com.dsa.serviceorder.remote.*;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
-import org.mybatis.spring.SqlSessionTemplate;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +38,7 @@ public class OrderService {
     OrderMapper orderMapper;
 
     @Autowired
-    ServiceClient serviceClient;
+    ServicePriceClient servicePriceClient;
 
     @Autowired
     ServiceDriverUserClient serviceDriverUserClient;
@@ -91,7 +87,7 @@ public class OrderService {
             return ResponseResult.fail(CommonStatusEnum.ORDER_EXISTS.getCode(), CommonStatusEnum.ORDER_EXISTS.getValue());
         }
         //判断计价规则是不是最新
-        ResponseResult<Boolean> isNew = serviceClient.isNew(orderRequest.getFareType(), orderRequest.getFareVersion());
+        ResponseResult<Boolean> isNew = servicePriceClient.isNew(orderRequest.getFareType(), orderRequest.getFareVersion());
         if (!isNew.getData()){
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_CHANGED.getCode(),CommonStatusEnum.PRICE_RULE_CHANGED.getValue());
         }
@@ -105,6 +101,8 @@ public class OrderService {
         order.setFareVersion(orderRequest.getFareVersion());
         order.setGmtCreate(now);
         order.setGmtModified(now);
+        HashMap<String, String> cityCodeVehicleType = getCityCodeVehicleType(orderRequest.getFareType());
+        order.setVehicleType(cityCodeVehicleType.get("vehicleType"));
         orderMapper.insert(order);
         //实时寻找附近司机,附近存在司机才可继续
         for (int i = 0; i < 6; i++) {
@@ -162,10 +160,16 @@ public class OrderService {
                 if (availableDriver.getCode() == CommonStatusEnum.AVAILABLE_DRIVER_EMPTY.getCode()){
                     continue radius;//跳到radius
                 }else {
+                    OrderDriverResponse availableDriverData = availableDriver.getData();
+                    String vehicleTypeFromCar = availableDriverData.getVehicleType();
+                    if (vehicleTypeFromCar.trim().equals(order.getVehicleType())){
+                        log.info("找到的车型不匹配："+vehicleTypeFromCar);
+                        continue ;
+                    }
                     log.info("找到了正在出车的司机："+carId);
                     //判断司机是否有正在进行中的订单
                     //这个部分在高并发下会产生问题，很可能刚查出来司机没有订单，但是同时别人就把这个司机抢走了
-                    Long driverId = availableDriver.getData().getDriverId();
+                    Long driverId = availableDriverData.getDriverId();
                     String lockKey = (driverId + "").intern();
                     RLock lock = redissonClient.getLock(lockKey);
                     lock.lock();
@@ -181,8 +185,8 @@ public class OrderService {
 
                     //查询当前司机信息
                     order.setDriverId(driverId);
-                    order.setDriverPhone(availableDriver.getData().getDriverPhone());
-                    order.setCarId(availableDriver.getData().getCarId());
+                    order.setDriverPhone(availableDriverData.getDriverPhone());
+                    order.setCarId(availableDriverData.getCarId());
                     //当前时间
                     LocalDateTime now = LocalDateTime.now();
                     order.setReceiveOrderTime(now);
@@ -190,9 +194,9 @@ public class OrderService {
                     order.setReceiveOrderCarLongitude(longitude);
                     order.setReceiveOrderCarLatitude(latitude);
                     //从司机和车辆来
-                    order.setLicenseId(availableDriver.getData().getLicenseId());
-                    order.setVehicleNo(availableDriver.getData().getVehicleNo());
-                    order.setVehicleType(availableDriver.getData().getVehicleType());
+                    order.setLicenseId(availableDriverData.getLicenseId());
+                    order.setVehicleNo(availableDriverData.getVehicleNo());
+//                    order.setVehicleType(vehicleTypeFromCar);//改成从乘客中来
                     order.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
 
                     order.setGmtModified(now);
@@ -255,8 +259,23 @@ public class OrderService {
         int $ = fareType.indexOf("$");
         String cityCode = fareType.substring(0, $);
         String vehicleType = fareType.substring($ + 1);
-        ResponseResult<Boolean> booleanResponseResult = serviceClient.ifExists(cityCode, vehicleType);
+        ResponseResult<Boolean> booleanResponseResult = servicePriceClient.ifExists(cityCode, vehicleType);
         return booleanResponseResult.getData();
+    }
+
+    /**
+     * 从fareType得到cityCode和vehicleType
+     * @param fareType
+     * @return
+     */
+    private HashMap<String, String> getCityCodeVehicleType(String fareType){
+        int $ = fareType.indexOf("$");
+        String cityCode = fareType.substring(0, $);
+        String vehicleType = fareType.substring($ + 1);
+        HashMap<String, String> map = new HashMap<>();
+        map.put("cityCode", cityCode);
+        map.put("vehicleType", vehicleType);
+        return map;
     }
 
     /**
@@ -403,8 +422,16 @@ public class OrderService {
         long starttime = order.getPickUpPassengerTime().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         long endtime = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
         ResponseResult<TrsearchResponse> trsearch = serviceMapClient.trsearch(tid, starttime, endtime);
-        order.setDriveMile(trsearch.getData().getDistanceMile());
-        order.setDriveTime(trsearch.getData().getTimeMin());
+        TrsearchResponse trsearchData = trsearch.getData();
+        Long distanceMile = trsearchData.getDistanceMile();
+        Long timeMin = trsearchData.getTimeMin();
+        order.setDriveMile(distanceMile);
+        order.setDriveTime(timeMin);
+        //获取价格
+        String fareType = order.getFareType();
+        ResponseResult<Double> priceResponseResult = servicePriceClient.calculatePrice(distanceMile.intValue(), timeMin.intValue(), fareType);
+        Double price = priceResponseResult.getData();
+        order.setPrice(price);
 
         orderMapper.updateById(order);
         return ResponseResult.success("到达目的地");

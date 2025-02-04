@@ -113,7 +113,7 @@ public class ForecastPriceService {
 //        return price.doubleValue();
 //    }
 
-    public ResponseResult calculatePrice(Integer distance, Integer duration, String fareType){
+    public ResponseResult<Double> calculatePrice(Integer distance, Integer duration, String fareType){
         QueryWrapper<PriceRule> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("fare_type", fareType);
         queryWrapper.orderByDesc("fare_version");
