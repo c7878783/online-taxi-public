@@ -1,4 +1,4 @@
-#http://localhost:80/alipay/pay?subject=%E8%BD%A6%E8%B4%B91&outTradeNo=1001&totalAmount=20
+#http://localhost:80/alipay/pay?subject=%E8%BD%A6%E8%B4%B91&outTradeNo=11&totalAmount=20
 
 #收到的参数:out_trade_no,1011
 #收到的参数:total_amount,20.00

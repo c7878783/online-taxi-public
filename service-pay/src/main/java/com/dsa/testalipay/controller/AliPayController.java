@@ -2,7 +2,9 @@ package com.dsa.testalipay.controller;
 
 import com.alipay.easysdk.factory.Factory;
 import com.alipay.easysdk.payment.page.models.AlipayTradePagePayResponse;
+import com.dsa.testalipay.service.AlipayService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,10 @@ import java.util.Map;
 @RequestMapping("/alipay")
 @ResponseBody
 public class AliPayController {
+
+    @Autowired
+    AlipayService alipayService;
+
     @GetMapping("/pay")
     public String pay(@RequestParam String subject, @RequestParam String outTradeNo, @RequestParam String totalAmount){
         AlipayTradePagePayResponse response;
@@ -36,9 +42,8 @@ public class AliPayController {
 
             if (Factory.Payment.Common().verifyNotify(param)){
                 System.out.println("通过支付宝验证");
-                for (String name : param.keySet()) {
-                    System.out.println("收到的参数:" + name + "," + param.get(name));
-                }
+                String outTradeNo = param.get("out_trade_no");
+                alipayService.pay(Long.parseLong(outTradeNo));
             }else {
                 System.out.println("支付宝验证不通过");
             }

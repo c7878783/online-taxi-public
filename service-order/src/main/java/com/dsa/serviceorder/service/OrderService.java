@@ -436,4 +436,17 @@ public class OrderService {
         orderMapper.updateById(order);
         return ResponseResult.success("到达目的地");
     }
+
+    /**
+     * 支付完成
+     * @param orderRequest
+     * @return
+     */
+    public ResponseResult pay(OrderRequest orderRequest) {
+        Long orderId = orderRequest.getOrderId();
+        Order order = orderMapper.selectById(orderId);
+        order.setOrderStatus(OrderConstants.SUCCESS_PAY);
+        orderMapper.updateById(order);
+        return ResponseResult.success("支付完成");
+    }
 }

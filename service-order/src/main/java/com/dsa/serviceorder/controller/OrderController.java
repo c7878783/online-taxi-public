@@ -1,6 +1,7 @@
 package com.dsa.serviceorder.controller;
 
 import com.dsa.internalcommon.constant.HeaderParamConstants;
+import com.dsa.internalcommon.constant.OrderConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.request.OrderRequest;
 import com.dsa.serviceorder.service.OrderService;
@@ -72,6 +73,16 @@ public class OrderController {
     @PostMapping("/passenger-getoff")
     public ResponseResult passengerGet0ff(@RequestBody OrderRequest orderRequest){
         return orderService.passengerGetoff(orderRequest);
+    }
+
+    /**
+     * 支付完成(8)
+     * @param orderRequest
+     * @return
+     */
+    @PostMapping("/pay")
+    public ResponseResult pay(@RequestBody OrderRequest orderRequest){
+        return orderService.pay(orderRequest);
     }
 
 }

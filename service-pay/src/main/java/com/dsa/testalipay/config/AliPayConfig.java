@@ -1,15 +1,11 @@
-package com.dsa.testalipay;
+package com.dsa.testalipay.config;
 
 import com.alipay.easysdk.factory.Factory;
 import com.alipay.easysdk.kernel.Config;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
-import org.apache.logging.log4j.status.StatusLogger;
-import org.springframework.boot.autoconfigure.http.client.HttpClientProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import java.io.ObjectInputFilter;
 
 @Component
 @ConfigurationProperties(prefix = "alipay")
