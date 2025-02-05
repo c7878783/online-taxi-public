@@ -1,6 +1,7 @@
 package com.dsa.apipassenger.service;
 
 import com.dsa.apipassenger.remote.ServiceOrderClient;
+import com.dsa.internalcommon.constant.IdentityConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.request.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,4 +17,7 @@ public class OrderService {
         return serviceOrderClient.add(orderRequest);
     }
 
+    public ResponseResult cancel(Long orderId) {
+        return serviceOrderClient.cancel(orderId, IdentityConstants.PASSENGER_IDENTITY);
+    }
 }

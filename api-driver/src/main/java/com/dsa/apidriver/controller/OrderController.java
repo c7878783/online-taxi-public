@@ -5,10 +5,7 @@ import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.request.OrderRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
@@ -55,5 +52,10 @@ public class OrderController {
     @PostMapping("/passenger-getoff")
     public ResponseResult passengerGet0ff(@RequestBody OrderRequest orderRequest){
         return orderService.passengerGetoff(orderRequest);
+    }
+
+    @PostMapping("cancel")
+    public ResponseResult cancel(@RequestParam Long orderId){
+        return orderService.cancel(orderId);
     }
 }

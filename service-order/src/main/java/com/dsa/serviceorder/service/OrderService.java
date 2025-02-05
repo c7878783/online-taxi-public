@@ -112,11 +112,18 @@ public class OrderService {
                 //派单成功
                 break;
             }
-            try {
-                //等待20s
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+            if (i == 5){
+                //没找到司机，订单无效
+                order.setOrderStatus(OrderConstants.ORDER_INVALID);
+                orderMapper.updateById(order);
+            }else {
+                try {
+                    //等待20s
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return ResponseResult.success("");
@@ -163,7 +170,7 @@ public class OrderService {
                 }else {
                     OrderDriverResponse availableDriverData = availableDriver.getData();
                     String vehicleTypeFromCar = availableDriverData.getVehicleType();
-                    if (vehicleTypeFromCar.trim().equals(order.getVehicleType())){
+                    if (!vehicleTypeFromCar.trim().equals(order.getVehicleType())){
                         log.info("找到的车型不匹配："+vehicleTypeFromCar);
                         continue ;
                     }
@@ -174,7 +181,7 @@ public class OrderService {
                     String lockKey = (driverId + "").intern();
                     RLock lock = redissonClient.getLock(lockKey);
                     lock.lock();
-                    Long validOrderNum = ifDriverOrderGoingOn(driverId);
+                    Long validOrderNum = ifDriverOrderGoingOn(driverId);//当前司机是否有有效订单
                     if (validOrderNum > 0){
                         lock.unlock();//不加这行，直接跳走导致死锁
                         continue ;//继续找车

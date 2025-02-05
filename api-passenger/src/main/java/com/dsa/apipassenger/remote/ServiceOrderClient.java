@@ -15,4 +15,6 @@ public interface ServiceOrderClient {
     @GetMapping("/test-real-time-order")
     public String dispatchRealaTimeOrder(@RequestParam long orderId);
 
+    @PostMapping("/order/cancel")
+    public ResponseResult cancel(@RequestParam Long orderId, @RequestParam String identity);
 }

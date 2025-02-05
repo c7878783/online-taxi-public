@@ -99,7 +99,7 @@ public class OrderController {
      * @return
      */
     @PostMapping("/cancel")
-    public ResponseResult cancel(@RequestParam Long orderId, String identity){
+    public ResponseResult cancel(@RequestParam Long orderId, @RequestParam String identity){
         return orderService.cancel(orderId, identity);
     }
 

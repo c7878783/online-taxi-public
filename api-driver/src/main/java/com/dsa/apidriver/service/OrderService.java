@@ -1,6 +1,7 @@
 package com.dsa.apidriver.service;
 
 import com.dsa.apidriver.remote.ServiceOrderClient;
+import com.dsa.internalcommon.constant.IdentityConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.request.OrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,9 @@ public class OrderService {
 
     public ResponseResult passengerGetoff(OrderRequest orderRequest) {
         return serviceOrderClient.passengerGet0ff(orderRequest);
+    }
+
+    public ResponseResult cancel(Long orderId) {
+        return serviceOrderClient.cancel(orderId, IdentityConstants.DRIVER_IDENTITY);
     }
 }
