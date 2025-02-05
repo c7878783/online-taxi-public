@@ -49,7 +49,8 @@ public enum CommonStatusEnum {
     DEVICE_IS_BLACK(1601, "该设备在短时间内多次下单，请稍后重试"),
     CITY_NOT_SERVICE(1602, "当前城市未开通服务"),
     CITY_DRIVER_EMPTY(1603, "当前城市没有可用司机"),
-    AVAILABLE_DRIVER_EMPTY(1604, "没有正在接单的司机")
+    AVAILABLE_DRIVER_EMPTY(1604, "没有正在接单的司机"),
+    ORDER_CANCEL_ERROR(1605,"订单取消失败")
     ;
     @Getter
     private int code;

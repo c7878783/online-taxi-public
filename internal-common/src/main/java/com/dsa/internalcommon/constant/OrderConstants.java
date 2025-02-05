@@ -21,4 +21,12 @@ public class OrderConstants {
     public static final int SUCCESS_PAY = 8;
     //订单取消：9
     public static final int ORDER_CANCEL = 9;
+
+    //订单撤销类型
+    public static final int CANCEL_PASSENGER_BEFORE = 1;
+    public static final int CANCEL_DRIVER_BEFORE = 2;
+    public static final int CANCEL_PLATFORM_BEFORE = 3;
+    public static final int CANCEL_PASSENGER_ILLEGAL = 4;
+    public static final int CANCEL_DRIVER_ILLEGAL = 5;
+
 }

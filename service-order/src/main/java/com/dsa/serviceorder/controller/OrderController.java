@@ -8,10 +8,7 @@ import com.dsa.serviceorder.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
@@ -93,6 +90,17 @@ public class OrderController {
     @PostMapping("/pay")
     public ResponseResult pay(@RequestBody OrderRequest orderRequest){
         return orderService.pay(orderRequest);
+    }
+
+    /**
+     * 订单取消(9)
+     * @param orderId
+     * @param identity
+     * @return
+     */
+    @PostMapping("/cancel")
+    public ResponseResult cancel(@RequestParam Long orderId, String identity){
+        return orderService.cancel(orderId, identity);
     }
 
 }
