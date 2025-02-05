@@ -438,6 +438,20 @@ public class OrderService {
     }
 
     /**
+     * 司机推送订单付款信息
+     * @param orderRequest
+     * @return
+     */
+    public ResponseResult pushPayInfo(OrderRequest orderRequest) {
+
+        Order order = new Order();
+        order.setId(orderRequest.getOrderId());
+        order.setOrderStatus(OrderConstants.TO_START_PAY);
+        orderMapper.updateById(order);
+
+        return ResponseResult.success("司机发起收款");
+    }
+    /**
      * 支付完成
      * @param orderRequest
      * @return
@@ -449,4 +463,6 @@ public class OrderService {
         orderMapper.updateById(order);
         return ResponseResult.success("支付完成");
     }
+
+
 }

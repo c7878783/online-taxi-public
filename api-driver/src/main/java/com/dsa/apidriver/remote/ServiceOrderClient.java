@@ -26,4 +26,7 @@ public interface ServiceOrderClient {
     @PostMapping("/order/passenger-getoff")
     public ResponseResult passengerGet0ff(@RequestBody OrderRequest orderRequest);
 
+    @PostMapping("/order/push-pay-info")
+    public ResponseResult pushPayInfo(@RequestBody OrderRequest orderRequest);
+
 }
