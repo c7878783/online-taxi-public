@@ -340,7 +340,7 @@ public class OrderService {
         if (b){
             String s = stringRedisTemplate.opsForValue().get(deviceCodeKey);
             int i = Integer.parseInt(s);
-            if (i >= 2 ){
+            if (i >= 20 ){
                 //当前设备超过下单次数
                 return true;
             }else {

@@ -22,6 +22,13 @@ public class UserController {
         return userService.updateDriverUser(driverUser);
     }
 
+    @PostMapping("/driver-user-work-status")
+    public ResponseResult getWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus){
+
+
+        return userService.getWorkStatus(driverUserWorkStatus);
+    }
+
     @PutMapping("/driver-user-work-status")
     public ResponseResult changeWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus){
 

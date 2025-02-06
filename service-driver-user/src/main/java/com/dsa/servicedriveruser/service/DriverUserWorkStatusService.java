@@ -30,4 +30,10 @@ public class DriverUserWorkStatusService {
         return ResponseResult.success("");
     }
 
+    public ResponseResult<DriverUserWorkStatus> getWorkStatus(DriverUserWorkStatus driverUserWorkStatus) {
+
+        Long driverId = driverUserWorkStatus.getDriverId();
+        return ResponseResult.success(driverUserWorkStatusMapper.selectById(driverId));
+
+    }
 }

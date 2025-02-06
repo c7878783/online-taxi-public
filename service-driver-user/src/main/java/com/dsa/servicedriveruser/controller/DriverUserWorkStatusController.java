@@ -5,9 +5,7 @@ import com.dsa.internalcommon.pojo.DriverUserWorkStatus;
 import com.dsa.servicedriveruser.service.DriverUserWorkStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class DriverUserWorkStatusController {
@@ -22,6 +20,13 @@ public class DriverUserWorkStatusController {
         Integer workStatus = driverUserWorkStatus.getWorkStatus();
 
         return driverUserWorkStatusService.changeWorkStatus(driverId, workStatus);
+    }
+
+    @PostMapping("/driver-user-work-status")
+    public ResponseResult<DriverUserWorkStatus> getWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus){
+
+
+        return driverUserWorkStatusService.getWorkStatus(driverUserWorkStatus);
     }
 
 }

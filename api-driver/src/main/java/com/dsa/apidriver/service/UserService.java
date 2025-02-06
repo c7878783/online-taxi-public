@@ -22,7 +22,14 @@ public class UserService {
         return serviceDriverUserClient.changeWorkStatus(driverUserWorkStatus);
     }
 
+    public ResponseResult getWorkStatus(DriverUserWorkStatus driverUserWorkStatus) {
+
+        return serviceDriverUserClient.getWorkStatus(driverUserWorkStatus);
+    }
+
     public  ResponseResult getDriverCarBindingRelationship(String driverPhone) {
         return serviceDriverUserClient.getDriverCarBindingRelationship(driverPhone);
     }
+
+
 }
