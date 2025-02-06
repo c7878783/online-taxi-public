@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public class DriverUserWorkStatus {
     private Long Id;
     private Long driverId;
-    private Integer workStatus;
+    private Integer workStatus;//0收车 1出车 2暂停接单
     private LocalDateTime gmtCreate;
     private LocalDateTime gmtModified;
 

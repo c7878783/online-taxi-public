@@ -13,6 +13,6 @@ public class PassengerUser {
     private String passengerPhone;
     private String passengerName;
     private byte passengerGender;
-    private byte state;
+    private byte state;//帐号状态0注销，1有效
     private String profilePhoto;
 }

@@ -2,6 +2,7 @@ package com.dsa.apidriver.remote;
 
 import com.dsa.internalcommon.dto.ResponseResult;
 import com.dsa.internalcommon.pojo.Car;
+import com.dsa.internalcommon.pojo.DriverCarBindingRelationship;
 import com.dsa.internalcommon.pojo.DriverUser;
 import com.dsa.internalcommon.pojo.DriverUserWorkStatus;
 import com.dsa.internalcommon.responese.DriverUserExistsResponse;
@@ -22,4 +23,7 @@ public interface ServiceDriverUserClient {
 
     @PutMapping("/driver-user-work-status")
     public ResponseResult changeWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus);
+
+    @GetMapping("/driver-car-binding-relationship")
+    public ResponseResult<DriverCarBindingRelationship> getDriverCarBindingRelationship(@RequestParam String driverPhone);
 }

@@ -2,10 +2,14 @@ package com.dsa.servicedriveruser.controller;
 
 import com.dsa.internalcommon.constant.DriverCarConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.dto.TokenResult;
+import com.dsa.internalcommon.pojo.DriverCarBindingRelationship;
 import com.dsa.internalcommon.pojo.DriverUser;
 import com.dsa.internalcommon.responese.DriverUserExistsResponse;
 import com.dsa.internalcommon.responese.OrderDriverResponse;
+import com.dsa.internalcommon.util.JwtUtils;
 import com.dsa.servicedriveruser.service.DriverUserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +55,13 @@ public class UserController {
     @GetMapping("/get-available-driver/{carId}")
     public ResponseResult<OrderDriverResponse> getAvailableDriver(@PathVariable("carId") Long carId){
         return driverUserService.getAvailableDriver(carId);
+    }
+
+    @GetMapping("/driver-car-binding-relationship")
+    public ResponseResult<DriverCarBindingRelationship> getDriverCarBindingRelationship(@RequestParam String driverPhone){
+
+        return driverUserService.getDriverCarBindingRelationship(driverPhone);
+
     }
 
 }
