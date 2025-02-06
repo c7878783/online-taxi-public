@@ -23,6 +23,7 @@ public class PayService {
         //封装消息
         JSONObject message = new JSONObject();
         message.put("price", price);
+        message.put("orderId", orderId);
         //推送消息
         serviceSsePushClient.push(passengerId, IdentityConstants.PASSENGER_IDENTITY, message.toString());
         OrderRequest orderRequest = new OrderRequest();

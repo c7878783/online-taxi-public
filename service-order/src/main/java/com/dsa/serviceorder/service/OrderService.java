@@ -24,7 +24,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -429,8 +431,8 @@ public class OrderService {
         //上面是填写下车地点和时间，下面是形成距离和时长
         ResponseResult<Car> carById = serviceDriverUserClient.getCarById(order.getCarId());
         String tid = carById.getData().getTid();
-        long starttime = order.getPickUpPassengerTime().toInstant(ZoneOffset.of("+8")).toEpochMilli();
-        long endtime = LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+        long starttime = order.getPickUpPassengerTime().atZone(ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli();
+        long endtime = ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).toInstant().toEpochMilli();
         ResponseResult<TrsearchResponse> trsearch = serviceMapClient.trsearch(tid, starttime, endtime);
         TrsearchResponse trsearchData = trsearch.getData();
         Long distanceMile = trsearchData.getDistanceMile();
