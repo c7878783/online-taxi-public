@@ -103,4 +103,15 @@ public class OrderController {
         return orderService.cancel(orderId, identity);
     }
 
+    /**
+     * 查询用户(司机/乘客)正在进行中的订单
+     * @param userId
+     * @param identity
+     * @return
+     */
+    @PostMapping("/get-order")
+    public ResponseResult getOrder(@RequestParam Long userId, @RequestParam String identity){
+        return orderService.getOrder(userId, identity);
+    }
+
 }

@@ -54,8 +54,13 @@ public class OrderController {
         return orderService.passengerGetoff(orderRequest);
     }
 
-    @PostMapping("cancel")
+    @PostMapping("/cancel")
     public ResponseResult cancel(@RequestParam Long orderId){
         return orderService.cancel(orderId);
+    }
+
+    @PostMapping("/get-order")
+    public ResponseResult getOrder(@RequestParam Long driverId){
+        return orderService.getOrder(driverId);
     }
 }

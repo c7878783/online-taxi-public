@@ -23,4 +23,9 @@ public class OrderController {
     public ResponseResult cancel(@RequestParam Long orderId){
         return orderService.cancel(orderId);
     }
+
+    @PostMapping("/get-order")
+    public ResponseResult getOrder(@RequestParam Long passengerId){
+        return orderService.getOrder(passengerId);
+    }
 }

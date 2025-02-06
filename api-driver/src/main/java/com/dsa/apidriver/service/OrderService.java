@@ -32,4 +32,11 @@ public class OrderService {
     public ResponseResult cancel(Long orderId) {
         return serviceOrderClient.cancel(orderId, IdentityConstants.DRIVER_IDENTITY);
     }
+
+    public ResponseResult getOrder(Long driverId) {
+
+        String driverIdentity = IdentityConstants.DRIVER_IDENTITY;
+
+        return serviceOrderClient.getOrder(driverId, driverIdentity);
+    }
 }

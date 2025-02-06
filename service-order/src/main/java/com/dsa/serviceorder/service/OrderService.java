@@ -550,4 +550,37 @@ public class OrderService {
 
         return ResponseResult.success("订单取消类型为"+cancelTypeCode);
     }
+
+    /**
+     * 查询用户正在进行中的订单
+     * @param userId
+     * @param identity
+     * @return
+     */
+    public ResponseResult getOrder(Long userId, String identity) {
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        if (identity.trim().equals(IdentityConstants.PASSENGER_IDENTITY)){
+            queryWrapper.eq("passenger_id", userId);
+            queryWrapper.and(wrapper -> wrapper.eq("order_status", OrderConstants.ORDER_START)
+                    .or().eq("order_status", OrderConstants.DRIVER_RECEIVE_ORDER)
+                    .or().eq("order_status", OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
+                    .or().eq("order_status", OrderConstants.DRIVER_ARRIVED_DEPARTURE)
+                    .or().eq("order_status", OrderConstants.PICK_UP_PASSENGER)
+                    .or().eq("order_status", OrderConstants.PASSENGER_GETOFF)
+                    .or().eq("order_status", OrderConstants.TO_START_PAY));
+        } else if (identity.trim().equals(IdentityConstants.DRIVER_IDENTITY)) {
+            queryWrapper.eq("driver_id", userId);
+            queryWrapper.and(wrapper -> wrapper.eq("order_status", OrderConstants.DRIVER_RECEIVE_ORDER)
+                    .or().eq("order_status", OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
+                    .or().eq("order_status", OrderConstants.DRIVER_ARRIVED_DEPARTURE)
+                    .or().eq("order_status", OrderConstants.PICK_UP_PASSENGER)
+                    .or().eq("order_status", OrderConstants.PASSENGER_GETOFF));
+        }
+        Order order = orderMapper.selectOne(queryWrapper);
+        if (order == null){
+            return ResponseResult.success("没有正在进行中的订单");
+        }else {
+            return ResponseResult.success("正在进行中的订单ID:" + order.getId());
+        }
+    }
 }
