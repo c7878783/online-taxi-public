@@ -102,6 +102,7 @@ public class OrderService {
         order.setFareVersion(orderRequest.getFareVersion());
         order.setGmtCreate(now);
         order.setGmtModified(now);
+        //从fareType中得到vehicleType
         HashMap<String, String> cityCodeVehicleType = getCityCodeVehicleType(orderRequest.getFareType());
         order.setVehicleType(cityCodeVehicleType.get("vehicleType"));
         orderMapper.insert(order);
@@ -212,6 +213,7 @@ public class OrderService {
 
                     //通知司机
                     JSONObject driverContent = new JSONObject();
+                    driverContent.put("orderId", order.getId());
                     driverContent.put("passengerId", order.getPassengerId());
                     driverContent.put("passengerPhone", order.getPassengerPhone());
 
@@ -222,11 +224,11 @@ public class OrderService {
                     driverContent.put("destination", order.getDestination());
                     driverContent.put("destLongitude", order.getDestLongitude());
                     driverContent.put("destLatitude", order.getDestLatitude());
-
                     serviceSsePushClient.push(driverId, IdentityConstants.DRIVER_IDENTITY, driverContent.toString());
 
                     //通知乘客
                     JSONObject passengerContent = new JSONObject();
+                    passengerContent.put("orderId", order.getId());
                     passengerContent.put("driverId", order.getDriverId());
                     passengerContent.put("driverPhone", order.getDriverPhone());
                     //车辆信息
@@ -437,6 +439,7 @@ public class OrderService {
         order.setDriveTime(timeMin);
         //获取价格
         String fareType = order.getFareType();
+        //getFareType可以，getVehicleType和Address也行
         ResponseResult<Double> priceResponseResult = servicePriceClient.calculatePrice(distanceMile.intValue(), timeMin.intValue(), fareType);
         Double price = priceResponseResult.getData();
         order.setPrice(price);
