@@ -27,6 +27,6 @@ public interface ServiceDriverUserClient {
     @GetMapping("/driver-car-binding-relationship")
     public ResponseResult<DriverCarBindingRelationship> getDriverCarBindingRelationship(@RequestParam String driverPhone);
 
-    @PostMapping("/driver-user-work-status")
-    public ResponseResult<DriverUserWorkStatus> getWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus);
+    @GetMapping("/work-status")
+    public ResponseResult<DriverUserWorkStatus> getWorkStatus(@RequestParam Long driverId);
 }

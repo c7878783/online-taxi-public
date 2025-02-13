@@ -3,11 +3,11 @@ package com.dsa.serviceorder.controller;
 import com.dsa.internalcommon.constant.HeaderParamConstants;
 import com.dsa.internalcommon.constant.OrderConstants;
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.pojo.Order;
 import com.dsa.internalcommon.request.OrderRequest;
 import com.dsa.serviceorder.service.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -102,7 +102,6 @@ public class OrderController {
     public ResponseResult cancel(@RequestParam Long orderId, @RequestParam String identity){
         return orderService.cancel(orderId, identity);
     }
-
     /**
      * 查询用户(司机/乘客)正在进行中的订单
      * @param userId
@@ -112,6 +111,26 @@ public class OrderController {
     @PostMapping("/get-order")
     public ResponseResult getOrder(@RequestParam Long userId, @RequestParam String identity){
         return orderService.getOrder(userId, identity);
+    }
+    /**
+     * 查询用户(司机/乘客)正在进行中的订单
+     * @param phone
+     * @param identity
+     * @return
+     */
+    @GetMapping("/current")
+    public ResponseResult current(String phone , String identity){
+        return orderService.current(phone , identity);
+    }
+
+    /**
+     * 订单详情
+     * @param orderId
+     * @return
+     */
+    @GetMapping("/detail")
+    public ResponseResult<Order> detail(Long orderId){
+        return orderService.detail(orderId);
     }
 
 }

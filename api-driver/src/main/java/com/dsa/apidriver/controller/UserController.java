@@ -22,14 +22,14 @@ public class UserController {
         return userService.updateDriverUser(driverUser);
     }
 
+//    @GetMapping("/driver-user-work-status")
+//    public ResponseResult getWorkStatus(@RequestParam Long driverId){
+//
+//
+//        return userService.getWorkStatus(driverId);
+//    }
+
     @PostMapping("/driver-user-work-status")
-    public ResponseResult getWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus){
-
-
-        return userService.getWorkStatus(driverUserWorkStatus);
-    }
-
-    @PutMapping("/driver-user-work-status")
     public ResponseResult changeWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus){
 
 
@@ -46,5 +46,10 @@ public class UserController {
 
         return userService.getDriverCarBindingRelationship(driverPhone);
 
+    }
+
+    @GetMapping("/work-status")
+    public ResponseResult<DriverUserWorkStatus> getWorkStatus(Long driverId){
+        return userService.getWorkStatus(driverId);
     }
 }

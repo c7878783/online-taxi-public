@@ -552,7 +552,7 @@ public class OrderService {
     }
 
     /**
-     * 查询用户正在进行中的订单
+     * 查询用户正在进行中的订单，改用电话号查，见current方法
      * @param userId
      * @param identity
      * @return
@@ -582,5 +582,40 @@ public class OrderService {
         }else {
             return ResponseResult.success("正在进行中的订单ID:" + order.getId());
         }
+    }
+
+    public ResponseResult<Order> current(String phone, String identity){
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+
+        if (identity.equals(IdentityConstants.DRIVER_IDENTITY)){
+            queryWrapper.eq("driver_phone",phone);
+
+            queryWrapper.and(wrapper->wrapper
+                    .eq("order_status",OrderConstants.DRIVER_RECEIVE_ORDER)
+                    .or().eq("order_status",OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
+                    .or().eq("order_status",OrderConstants.DRIVER_ARRIVED_DEPARTURE)
+                    .or().eq("order_status",OrderConstants.PICK_UP_PASSENGER)
+
+            );
+        }
+        if (identity.equals(IdentityConstants.PASSENGER_IDENTITY)){
+            queryWrapper.eq("passenger_phone",phone);
+            queryWrapper.and(wrapper->wrapper.eq("order_status",OrderConstants.ORDER_START)
+                    .or().eq("order_status",OrderConstants.DRIVER_RECEIVE_ORDER)
+                    .or().eq("order_status",OrderConstants.DRIVER_TO_PICK_UP_PASSENGER)
+                    .or().eq("order_status",OrderConstants.DRIVER_ARRIVED_DEPARTURE)
+                    .or().eq("order_status",OrderConstants.PICK_UP_PASSENGER)
+                    .or().eq("order_status",OrderConstants.PASSENGER_GETOFF)
+                    .or().eq("order_status",OrderConstants.TO_START_PAY)
+            );
+        }
+
+        Order orderInfo = orderMapper.selectOne(queryWrapper);
+        return ResponseResult.success(orderInfo);
+    }
+
+    public ResponseResult<Order> detail(Long orderId){
+        Order orderInfo =  orderMapper.selectById(orderId);
+        return ResponseResult.success(orderInfo);
     }
 }

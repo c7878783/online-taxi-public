@@ -1,6 +1,7 @@
 package com.dsa.servicepassengeruser.controller;
 
 import com.dsa.internalcommon.dto.ResponseResult;
+import com.dsa.internalcommon.pojo.PassengerUser;
 import com.dsa.internalcommon.request.VerificationCodeDTO;
 import com.dsa.servicepassengeruser.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserController {
      * 参数用body去传，会有bug报错，改成显式的传参数,这是一个get和post有关的bug：feign调用post转get
      */
     @GetMapping("/user/{phone}")
-    public ResponseResult getUser(@PathVariable("phone") String passengerPhone){
+    public ResponseResult<PassengerUser> getUser(@PathVariable("phone") String passengerPhone){
 //        String passengerPhone = verificationCodeDTO.getPassengerPhone();
         return userService.getUserByPhone(passengerPhone);
     }

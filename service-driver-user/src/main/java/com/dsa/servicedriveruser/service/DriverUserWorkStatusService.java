@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DriverUserWorkStatusService {
@@ -30,10 +31,13 @@ public class DriverUserWorkStatusService {
         return ResponseResult.success("");
     }
 
-    public ResponseResult<DriverUserWorkStatus> getWorkStatus(DriverUserWorkStatus driverUserWorkStatus) {
+    public ResponseResult<DriverUserWorkStatus> getWorkStatus(Long driverId) {
+        Map<String,Object> queryMap = new HashMap<>();
+        queryMap.put("driver_id",driverId);
+        List<DriverUserWorkStatus> driverUserWorkStatuses = driverUserWorkStatusMapper.selectByMap(queryMap);
+        DriverUserWorkStatus driverUserWorkStatus = driverUserWorkStatuses.get(0);
 
-        Long driverId = driverUserWorkStatus.getDriverId();
-        return ResponseResult.success(driverUserWorkStatusMapper.selectById(driverId));
+        return ResponseResult.success(driverUserWorkStatus);
 
     }
 }

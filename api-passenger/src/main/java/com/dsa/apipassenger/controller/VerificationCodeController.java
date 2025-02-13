@@ -21,7 +21,7 @@ public class VerificationCodeController {
      * @param verificationCodeDTO 用来接受手机号passengerPhone的Body体变量
      * @return 调用service生成验证码
      */
-    @GetMapping("/verification-code")
+    @PostMapping("/verification-code")
     public ResponseResult verificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO){
 
         String passengerPhone = verificationCodeDTO.getPassengerPhone();

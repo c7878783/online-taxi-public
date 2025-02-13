@@ -22,11 +22,9 @@ public class DriverUserWorkStatusController {
         return driverUserWorkStatusService.changeWorkStatus(driverId, workStatus);
     }
 
-    @PostMapping("/driver-user-work-status")
-    public ResponseResult<DriverUserWorkStatus> getWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus){
-
-
-        return driverUserWorkStatusService.getWorkStatus(driverUserWorkStatus);
+    @GetMapping("/work-status")
+    public ResponseResult<DriverUserWorkStatus> getWorkStatus(Long driverId){
+        return driverUserWorkStatusService.getWorkStatus(driverId);
     }
 
 }

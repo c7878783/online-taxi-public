@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient("service-order")
 public interface ServiceOrderClient {
 
-    @RequestMapping (method = RequestMethod.POST, value = "/order/add")
+    @RequestMapping(method = RequestMethod.POST, value = "/order/add")
     public ResponseResult add(@RequestBody OrderRequest orderRequest);
 
     @GetMapping("/test-real-time-order")
@@ -18,6 +18,9 @@ public interface ServiceOrderClient {
     @PostMapping("/order/cancel")
     public ResponseResult cancel(@RequestParam Long orderId, @RequestParam String identity);
 
-    @PostMapping("/order/get-order")
-    public ResponseResult getOrder(@RequestParam Long userId, @RequestParam String identity);
+    @RequestMapping(method = RequestMethod.GET, value = "/order/current")
+    public ResponseResult current(@RequestParam String phone ,@RequestParam String identity);
+
+    @RequestMapping(method = RequestMethod.GET, value = "/order/detail")
+    public ResponseResult<Order> detail(@RequestParam Long orderId);
 }

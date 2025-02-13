@@ -6,7 +6,7 @@ import com.dsa.internalcommon.request.VerificationCodeDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+//@CrossOrigin(origins = "http://localhost:3001")
 @RestController
 @Slf4j
 public class VerificationCodeController {
@@ -14,7 +14,7 @@ public class VerificationCodeController {
     @Autowired
     VerificationCodeService verificationCodeService;
 
-    @GetMapping("/verification-code")
+    @PostMapping("/verification-code")
     public ResponseResult verificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO){
         String driverPhone = verificationCodeDTO.getDriverPhone();
 

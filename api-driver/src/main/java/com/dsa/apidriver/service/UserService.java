@@ -22,9 +22,8 @@ public class UserService {
         return serviceDriverUserClient.changeWorkStatus(driverUserWorkStatus);
     }
 
-    public ResponseResult getWorkStatus(DriverUserWorkStatus driverUserWorkStatus) {
-
-        return serviceDriverUserClient.getWorkStatus(driverUserWorkStatus);
+    public ResponseResult<DriverUserWorkStatus> getWorkStatus(Long driverId){
+        return serviceDriverUserClient.getWorkStatus(driverId);
     }
 
     public  ResponseResult getDriverCarBindingRelationship(String driverPhone) {

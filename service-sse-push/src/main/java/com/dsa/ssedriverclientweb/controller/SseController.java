@@ -25,14 +25,14 @@ public class SseController {
      * @return
      */
     @GetMapping("/connect")
-    public SseEmitter connect(@RequestParam String userId, @RequestParam String identity){
+    public SseEmitter connect(@RequestParam Long userId, @RequestParam String identity){
 
-        long longUserId = Long.parseLong(userId);
+//        long longUserId = Long.parseLong(userId);
 
-        log.info("用户Id:"+longUserId+"|"+"用户身份："+identity);
+        log.info("用户Id:"+userId+"|"+"用户身份："+identity);
 
         SseEmitter sseEmitter = new SseEmitter(0L);
-        String sseMapKey = SsePrefixUtils.generatorSseKey(longUserId, identity);
+        String sseMapKey = SsePrefixUtils.generatorSseKey(userId, identity);
 
         sseEmitterMap.put(sseMapKey, sseEmitter);
 
